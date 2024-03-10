@@ -35,12 +35,12 @@ public class PlayerController : NetworkBehaviour
             playerCamera = Camera.main;
             playerCamera.transform.position = new Vector3(transform.position.x, transform.position.y + cameraYOffset, transform.position.z);
             playerCamera.transform.SetParent(transform);
-            gameObject.name = "Player (Local)";
+            gameObject.name = "Player Character (Local)";
         }
         else
         {
             gameObject.GetComponent<PlayerController>().enabled = false;
-            gameObject.name = "Player (Remote)";
+            gameObject.name = "Player Character (Remote)";
         }
     }
 
