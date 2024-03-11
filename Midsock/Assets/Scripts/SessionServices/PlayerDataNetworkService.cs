@@ -9,7 +9,7 @@ using UnityEngine;
 /// <summary>
 /// Server controlled player data manager
 /// </summary>
-public class PlayerDataService : NetworkBehaviour
+public class PlayerDataNetworkService : NetworkBehaviour
 {
     [Serializable]
     public struct PlayerData
@@ -23,7 +23,7 @@ public class PlayerDataService : NetworkBehaviour
 
     public GameObject _playerClientPrefab;
 
-    public static PlayerDataService Instance { get; private set; }
+    public static PlayerDataNetworkService Instance { get; private set; }
 
     [SyncObject]
     private readonly SyncDictionary<NetworkConnection, PlayerData> _playerDataMap = new();

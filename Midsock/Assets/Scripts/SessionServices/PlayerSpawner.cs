@@ -11,6 +11,6 @@ public class PlayerSpawner : NetworkBehaviour
 
     private void SpawnPlayer()
     {
-        PlayerDataService.Instance.SpawnCharacterClient(LocalConnection);
+        PlayerDataNetworkService.Instance.SpawnCharacterClient(LocalConnection);
     }
 }

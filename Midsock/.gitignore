@@ -154,7 +154,7 @@ sysinfo.txt
 
 # End of https://www.toptal.com/developers/gitignore/api/unity,rider
 
-# Odin gitignore
+### Odin ###
 
 # Ignore the auto-generated AOT compatibility dll.
 /Assets/Plugins/Sirenix/Assemblies/AOT/*
@@ -164,3 +164,6 @@ sysinfo.txt
 
 # But keep the demo packages themselves.
 !/Assets/Plugins/Sirenix/Demos/*.unitypackage 
+
+### Custom ###
+/Assets/Settings/Editor/User/*
