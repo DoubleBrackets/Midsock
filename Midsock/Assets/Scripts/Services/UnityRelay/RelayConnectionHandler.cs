@@ -123,6 +123,8 @@ public class RelayConnectionHandler : MonoBehaviour
 
             Debug.Log($"Joined Relay with code {joinCode} in region {_currentJoinAllocation.Region}");
 
+            JoinCode = joinCode;
+
             _relayState = RelayState.Client;
 
             InstanceFinder.ClientManager.StartConnection();

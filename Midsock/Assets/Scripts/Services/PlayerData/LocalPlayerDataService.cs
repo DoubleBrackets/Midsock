@@ -1,6 +1,5 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 /// <summary>
@@ -8,22 +7,32 @@ using UnityEngine;
 /// </summary>
 public class LocalPlayerDataService : MonoBehaviour
 {
-    public static LocalPlayerDataService Instance { get; private set; }
+    private const string dataPath = "/playerData.json";
 
     [field: SerializeField]
     public LocalPlayerDataContainer LocalPlayerDataContainer { get; private set; }
+
+    public static LocalPlayerDataService Instance { get; private set; }
 
     public string PlayerName
     {
         get => LocalPlayerDataContainer.LocalPlayerData.PlayerName;
         set
         {
-            LocalPlayerDataContainer.LocalPlayerData.SetPlayerName(value);
+            LocalPlayerDataContainer.LocalPlayerData.PlayerName = value;
             SaveData();
         }
     }
 
-    private const string dataPath = "/playerData.json";
+    public string RegionPreference
+    {
+        get => LocalPlayerDataContainer.LocalPlayerData.RegionPreference;
+        set
+        {
+            LocalPlayerDataContainer.LocalPlayerData.RegionPreference = value;
+            SaveData();
+        }
+    }
 
     private void Awake()
     {
@@ -41,7 +50,7 @@ public class LocalPlayerDataService : MonoBehaviour
         try
         {
             string path = Application.persistentDataPath + dataPath;
-            var data = JsonUtility.FromJson<PlayerData>(System.IO.File.ReadAllText(path));
+            var data = JsonUtility.FromJson<PlayerData>(File.ReadAllText(path));
             LocalPlayerDataContainer.LocalPlayerData = data;
             return data;
         }
@@ -57,8 +66,7 @@ public class LocalPlayerDataService : MonoBehaviour
 
     public void SaveData()
     {
-        Debug.Log($"Updating name to {LocalPlayerDataContainer.LocalPlayerData.PlayerName}");
         string path = Application.persistentDataPath + dataPath;
-        System.IO.File.WriteAllText(path, JsonUtility.ToJson(LocalPlayerDataContainer.LocalPlayerData));
+        File.WriteAllText(path, JsonUtility.ToJson(LocalPlayerDataContainer.LocalPlayerData));
     }
 }

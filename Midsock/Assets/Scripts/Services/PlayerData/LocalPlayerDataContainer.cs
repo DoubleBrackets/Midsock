@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "LocalPlayerDataContainer", menuName = "LocalPlayerDataContainer")]
@@ -9,14 +8,12 @@ public class LocalPlayerDataContainer : AnnotatedScriptableObject
     public PlayerData LocalPlayerData { get; set; }
 }
 
-[System.Serializable]
+[Serializable]
 public class PlayerData
 {
     [field: SerializeField]
-    public string PlayerName { get; private set; }
+    public string PlayerName { get; set; }
 
-    public void SetPlayerName(string playerName)
-    {
-        PlayerName = playerName;
-    }
+    [field: SerializeField]
+    public string RegionPreference { get; set; }
 }

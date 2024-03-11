@@ -39,6 +39,7 @@ public class ConnectionUIController : MonoBehaviour
     {
         _hostButton.onClick.AddListener(OnHostButtonClicked);
         _joinButton.onClick.AddListener(OnJoinButtonClicked);
+        _regionDropdown.onValueChanged.AddListener(OnRegionChanged);
 
         _foundRegions = false;
 
@@ -49,6 +50,17 @@ public class ConnectionUIController : MonoBehaviour
     {
         _hostButton.onClick.RemoveListener(OnHostButtonClicked);
         _joinButton.onClick.RemoveListener(OnJoinButtonClicked);
+        _regionDropdown.onValueChanged.RemoveListener(OnRegionChanged);
+    }
+
+    private void OnRegionChanged(int index)
+    {
+        string regionId = _regionDropdown.options[index].text;
+
+        if (_foundRegions)
+        {
+            LocalPlayerDataService.Instance.RegionPreference = regionId;
+        }
     }
 
     private async UniTaskVoid SetupRegionDropdownAsync(CancellationToken token)
@@ -84,6 +96,17 @@ public class ConnectionUIController : MonoBehaviour
 
             _regionDropdown.ClearOptions();
             _regionDropdown.AddOptions(options);
+
+            // Set the dropdown to the player's preferred region
+            string preferredRegion = LocalPlayerDataService.Instance.RegionPreference;
+            if (!string.IsNullOrEmpty(preferredRegion))
+            {
+                int preferredRegionIndex = options.FindIndex(o => o.text == preferredRegion);
+                if (preferredRegionIndex != -1)
+                {
+                    _regionDropdown.value = preferredRegionIndex;
+                }
+            }
         }
         catch (Exception e)
         {
