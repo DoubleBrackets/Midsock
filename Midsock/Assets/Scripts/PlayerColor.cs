@@ -4,10 +4,10 @@ using UnityEngine;
 public class PlayerColor : NetworkBehaviour
 {
     [SerializeField]
-    private GameObject player;
+    private GameObject _player;
 
     [SerializeField]
-    private Color color;
+    private Color _color;
 
     private bool _isOwner;
 
@@ -15,7 +15,7 @@ public class PlayerColor : NetworkBehaviour
     {
         if (Input.GetKeyDown(KeyCode.F) && _isOwner)
         {
-            ChangeColorServerRpc(player, color);
+            ChangeColorServerRpc(_player, _color);
         }
     }
 

@@ -26,7 +26,6 @@ public class InSessionPlayerClient : NetworkBehaviour
             HandleCharacterSpawnedBroadcast);
     }
 
-
     private void HandleCharacterSpawnedBroadcast(SessionStateManager.SpawnCharactersBroadcast data)
     {
         // What.

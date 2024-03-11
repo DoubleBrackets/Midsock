@@ -4,14 +4,14 @@ using UnityEngine;
 public class ChatEntry : MonoBehaviour
 {
     [SerializeField]
-    private TMP_Text chatText;
+    private TMP_Text _chatText;
 
     [SerializeField]
-    private TMP_Text chatName;
+    private TMP_Text _chatName;
 
     public void SetChatText(string name, string text)
     {
-        chatName.text = name;
-        chatText.text = text;
+        _chatName.text = name;
+        _chatText.text = text;
     }
 }

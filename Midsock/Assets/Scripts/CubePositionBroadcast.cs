@@ -8,17 +8,18 @@ public class CubePositionBroadcast : MonoBehaviour
 {
     public struct PositionIndex : IBroadcast
     {
-        public int TIndex;
+        public int Index;
     }
 
-    public List<Transform> cubePositions = new();
-    public int transformIndex;
+    public List<Transform> _cubePositions = new();
+
+    public int _transformIndex;
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            int nextIndex = (transformIndex + 1) % cubePositions.Count;
+            int nextIndex = (_transformIndex + 1) % _cubePositions.Count;
             /*if (InstanceFinder.IsServer)
             {
                 Debug.Log("Server broadcast out");
@@ -32,12 +33,12 @@ public class CubePositionBroadcast : MonoBehaviour
                 Debug.Log("Client broadcast out");
                 InstanceFinder.ClientManager.Broadcast(new PositionIndex
                 {
-                    TIndex = nextIndex
+                    Index = nextIndex
                 });
             }
         }
 
-        transform.position = cubePositions[transformIndex].position;
+        transform.position = _cubePositions[_transformIndex].position;
     }
 
     private void OnEnable()
@@ -63,13 +64,13 @@ public class CubePositionBroadcast : MonoBehaviour
         }
 
         Debug.Log("Client: Received position broadcast from Server");
-        transformIndex = index.TIndex;
+        _transformIndex = index.Index;
     }
 
     private void OnClientPositionBroadcast(NetworkConnection networkConnection, PositionIndex index)
     {
         Debug.Log("Server: Received position broadcast from Client");
-        transformIndex = index.TIndex;
+        _transformIndex = index.Index;
         InstanceFinder.ServerManager.Broadcast(index);
     }
 }

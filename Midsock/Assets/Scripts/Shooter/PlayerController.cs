@@ -5,19 +5,24 @@ using UnityEngine;
 public class PlayerController : NetworkBehaviour
 {
     [Header("Base setup")]
-    public float walkingSpeed = 7.5f;
 
-    public float runningSpeed = 11.5f;
-    public float jumpSpeed = 8.0f;
-    public float gravity = 20.0f;
-    public float lookSpeed = 2.0f;
-    public float lookXLimit = 45.0f;
+    public float _walkingSpeed = 7.5f;
+
+    public float _runningSpeed = 11.5f;
+
+    public float _jumpSpeed = 8.0f;
+
+    public float _gravity = 20.0f;
+
+    public float _lookSpeed = 2.0f;
+
+    public float _lookXLimit = 45.0f;
 
     [HideInInspector]
-    public bool canMove = true;
+    public bool _canMove = true;
 
     [SerializeField]
-    private float cameraYOffset = 0.4f;
+    private float _cameraYOffset = 0.4f;
 
     private CharacterController _characterController;
     private Vector3 _moveDirection = Vector3.zero;
@@ -45,14 +50,14 @@ public class PlayerController : NetworkBehaviour
         Vector3 forward = transform.TransformDirection(Vector3.forward);
         Vector3 right = transform.TransformDirection(Vector3.right);
 
-        float curSpeedX = canMove ? (isRunning ? runningSpeed : walkingSpeed) * Input.GetAxis("Vertical") : 0;
-        float curSpeedY = canMove ? (isRunning ? runningSpeed : walkingSpeed) * Input.GetAxis("Horizontal") : 0;
+        float curSpeedX = _canMove ? (isRunning ? _runningSpeed : _walkingSpeed) * Input.GetAxis("Vertical") : 0;
+        float curSpeedY = _canMove ? (isRunning ? _runningSpeed : _walkingSpeed) * Input.GetAxis("Horizontal") : 0;
         float movementDirectionY = _moveDirection.y;
         _moveDirection = forward * curSpeedX + right * curSpeedY;
 
-        if (Input.GetButton("Jump") && canMove && _characterController.isGrounded)
+        if (Input.GetButton("Jump") && _canMove && _characterController.isGrounded)
         {
-            _moveDirection.y = jumpSpeed;
+            _moveDirection.y = _jumpSpeed;
         }
         else
         {
@@ -61,19 +66,19 @@ public class PlayerController : NetworkBehaviour
 
         if (!_characterController.isGrounded)
         {
-            _moveDirection.y -= gravity * Time.deltaTime;
+            _moveDirection.y -= _gravity * Time.deltaTime;
         }
 
         // Move the controller
         _characterController.Move(_moveDirection * Time.deltaTime);
 
         // Player and Camera rotation
-        if (canMove && _playerCamera != null)
+        if (_canMove && _playerCamera != null)
         {
-            _rotationX += -Input.GetAxis("Mouse Y") * lookSpeed;
-            _rotationX = Mathf.Clamp(_rotationX, -lookXLimit, lookXLimit);
+            _rotationX += -Input.GetAxis("Mouse Y") * _lookSpeed;
+            _rotationX = Mathf.Clamp(_rotationX, -_lookXLimit, _lookXLimit);
             _playerCamera.transform.localRotation = Quaternion.Euler(_rotationX, 0, 0);
-            transform.rotation *= Quaternion.Euler(0, Input.GetAxis("Mouse X") * lookSpeed, 0);
+            transform.rotation *= Quaternion.Euler(0, Input.GetAxis("Mouse X") * _lookSpeed, 0);
         }
     }
 
@@ -83,14 +88,13 @@ public class PlayerController : NetworkBehaviour
         Cursor.visible = true;
     }
 
-
     public override void OnStartClient()
     {
         base.OnStartClient();
         if (IsOwner)
         {
             _playerCamera = Camera.main;
-            _playerCamera.transform.position = new Vector3(transform.position.x, transform.position.y + cameraYOffset,
+            _playerCamera.transform.position = new Vector3(transform.position.x, transform.position.y + _cameraYOffset,
                 transform.position.z);
             _playerCamera.transform.SetParent(transform);
             gameObject.name = "Player Character (Local)";

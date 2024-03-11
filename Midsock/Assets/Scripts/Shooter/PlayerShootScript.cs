@@ -1,15 +1,13 @@
 using FishNet.Object;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class PlayerShootScript : NetworkBehaviour
 {
-    [FormerlySerializedAs("Damage")]
     [SerializeField]
-    private int damage;
+    private int _damage;
 
     [SerializeField]
-    public float cooldownTime;
+    public float _cooldownTime;
 
     private float _nextFireTime;
 
@@ -27,9 +25,9 @@ public class PlayerShootScript : NetworkBehaviour
 
         if (Input.GetMouseButtonDown(0) && Time.time > _nextFireTime)
         {
-            _nextFireTime = Time.time + cooldownTime;
+            _nextFireTime = Time.time + _cooldownTime;
             Debug.Log("Shoot Client Side");
-            ShootServerRpc(damage, Camera.main.transform.position, Camera.main.transform.forward);
+            ShootServerRpc(_damage, Camera.main.transform.position, Camera.main.transform.forward);
         }
     }
 

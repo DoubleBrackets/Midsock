@@ -16,22 +16,22 @@ public class SimpleConnector : MonoBehaviour
     }
 
     [SerializeField]
-    private bool connectOnStart;
+    private bool _connectOnStart;
 
     [SerializeField]
-    private ConnectionType awakeConnectType;
+    private ConnectionType _awakeConnectType;
 
     [SerializeField]
-    private Tugboat tugboat;
+    private Tugboat _tugboat;
 
     [SerializeField]
-    private NetworkManager networkManager;
+    private NetworkManager _networkManager;
 
     private void Start()
     {
-        if (connectOnStart)
+        if (_connectOnStart)
         {
-            StartConnection(awakeConnectType);
+            StartConnection(_awakeConnectType);
         }
     }
 
@@ -65,26 +65,26 @@ public class SimpleConnector : MonoBehaviour
 #if UNITY_EDITOR
         if (type == ConnectionType.Host)
         {
-            tugboat.SetClientAddress("localhost");
+            _tugboat.SetClientAddress("localhost");
             if (ClonesManager.IsClone())
             {
                 // Clone; Join as a client
-                networkManager.ClientManager.StartConnection();
+                _networkManager.ClientManager.StartConnection();
             }
             else
             {
                 // Local host; both server and client
-                networkManager.ServerManager.StartConnection();
-                networkManager.ClientManager.StartConnection();
+                _networkManager.ServerManager.StartConnection();
+                _networkManager.ClientManager.StartConnection();
             }
         }
         else if (type == ConnectionType.Server)
         {
-            networkManager.ServerManager.StartConnection();
+            _networkManager.ServerManager.StartConnection();
         }
         else if (type == ConnectionType.Client)
         {
-            networkManager.ClientManager.StartConnection();
+            _networkManager.ClientManager.StartConnection();
         }
 
 #endif

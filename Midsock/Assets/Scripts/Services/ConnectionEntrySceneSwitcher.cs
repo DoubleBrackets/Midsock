@@ -15,11 +15,11 @@ public class ConnectionEntrySceneSwitcher : MonoBehaviour
 {
     [SerializeField]
     [Scene]
-    private string offlineEntryScene;
+    private string _offlineEntryScene;
 
     [SerializeField]
     [Scene]
-    private string onlineEntryScene;
+    private string _onlineEntryScene;
 
     private NetworkManager _networkManager;
 
@@ -57,7 +57,7 @@ public class ConnectionEntrySceneSwitcher : MonoBehaviour
             }
 
             //If here can load scene.
-            var sld = new SceneLoadData(GetSceneName(onlineEntryScene));
+            var sld = new SceneLoadData(GetSceneName(_onlineEntryScene));
             sld.ReplaceScenes = ReplaceOption.None;
             _networkManager.SceneManager.LoadGlobalScenes(sld);
         }
@@ -85,7 +85,7 @@ public class ConnectionEntrySceneSwitcher : MonoBehaviour
         var onlineLoaded = false;
         foreach (Scene s in obj.LoadedScenes)
         {
-            if (s.name == GetSceneName(onlineEntryScene))
+            if (s.name == GetSceneName(_onlineEntryScene))
             {
                 onlineLoaded = true;
                 break;
@@ -102,18 +102,18 @@ public class ConnectionEntrySceneSwitcher : MonoBehaviour
     private void LoadOfflineScene()
     {
         //Already in offline scene.
-        if (UnitySceneManager.GetActiveScene().name == GetSceneName(offlineEntryScene))
+        if (UnitySceneManager.GetActiveScene().name == GetSceneName(_offlineEntryScene))
         {
             return;
         }
 
         //Only use scene manager if networking scenes.
-        UnitySceneManager.LoadScene(offlineEntryScene);
+        UnitySceneManager.LoadScene(_offlineEntryScene);
     }
 
     private void UnloadOfflineScene()
     {
-        Scene scene = UnitySceneManager.GetSceneByName(GetSceneName(offlineEntryScene));
+        Scene scene = UnitySceneManager.GetSceneByName(GetSceneName(_offlineEntryScene));
         if (string.IsNullOrEmpty(scene.name))
         {
             return;

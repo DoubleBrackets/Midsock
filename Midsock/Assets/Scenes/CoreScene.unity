@@ -253,8 +253,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4700d38896f8d7b488eb08487bb918f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  offlineEntryScene: Assets/Scenes/Offline/OfflineMainMenu.unity
-  onlineEntryScene: Assets/Scenes/Session/SessionBaseScene.unity
+  _offlineEntryScene: Assets/Scenes/Offline/OfflineMainMenu.unity
+  _onlineEntryScene: Assets/Scenes/Session/SessionBaseScene.unity
 --- !u!4 &995264671
 Transform:
   m_ObjectHideFlags: 0
@@ -460,7 +460,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7df7bd90301e72d4da73b19a8c866220, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fishyUnityTransport: {fileID: 1128218633}
+  _fishyUnityTransport: {fileID: 1128218633}
 --- !u!1 &1847248355
 GameObject:
   m_ObjectHideFlags: 0
@@ -505,10 +505,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b735560f108b04e4baf4a9b77bb9d0cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  connectOnStart: 0
-  awakeConnectType: 1
-  tugboat: {fileID: 0}
-  networkManager: {fileID: 0}
+  _connectOnStart: 0
+  _awakeConnectType: 0
+  _tugboat: {fileID: 1044129624}
+  _networkManager: {fileID: 7443408886984453241}
 --- !u!1 &1989255825
 GameObject:
   m_ObjectHideFlags: 0
@@ -553,7 +553,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1467a55cb4d89aa4396f23ec984f793c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startupScene: Assets/Scenes/Offline/OfflineMainMenu.unity
+  _startupScene: Assets/Scenes/Offline/OfflineMainMenu.unity
 --- !u!1 &7443408886984453240
 GameObject:
   m_ObjectHideFlags: 0

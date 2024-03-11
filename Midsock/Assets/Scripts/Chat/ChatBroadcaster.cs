@@ -13,17 +13,20 @@ public class ChatBroadcaster : MonoBehaviour
     }
 
     [SerializeField]
-    private Transform chatContainer;
+    private Transform _chatContainer;
 
     [SerializeField]
-    private GameObject chatEntryPrefab;
+    private GameObject _chatEntryPrefab;
 
     [SerializeField]
-    private TMP_InputField chatInput, userName;
+    private TMP_InputField _chatInput;
+
+    [SerializeField]
+    private TMP_InputField _userName;
 
     private void OnEnable()
     {
-        chatInput.onSubmit.AddListener(OnSubmitMessage);
+        _chatInput.onSubmit.AddListener(OnSubmitMessage);
 
         InstanceFinder.ClientManager.RegisterBroadcast<ChatMessage>(OnServerChatMessage);
         InstanceFinder.ServerManager.RegisterBroadcast<ChatMessage>(OnClientChatMessage);
@@ -31,7 +34,7 @@ public class ChatBroadcaster : MonoBehaviour
 
     private void OnDisable()
     {
-        chatInput.onSubmit.RemoveListener(OnSubmitMessage);
+        _chatInput.onSubmit.RemoveListener(OnSubmitMessage);
 
         InstanceFinder.ClientManager.UnregisterBroadcast<ChatMessage>(OnServerChatMessage);
         InstanceFinder.ServerManager.UnregisterBroadcast<ChatMessage>(OnClientChatMessage);
@@ -40,7 +43,7 @@ public class ChatBroadcaster : MonoBehaviour
     private void OnServerChatMessage(ChatMessage message)
     {
         Debug.Log("Client: Received chat message from Server, Displaying");
-        GameObject newMessage = Instantiate(chatEntryPrefab, chatContainer);
+        GameObject newMessage = Instantiate(_chatEntryPrefab, _chatContainer);
         newMessage.GetComponent<ChatEntry>().SetChatText(message.Name, message.Message);
     }
 
@@ -58,7 +61,7 @@ public class ChatBroadcaster : MonoBehaviour
             return;
         }
 
-        string name = userName.text;
+        string name = _userName.text;
         if (message == string.Empty || name == string.Empty)
         {
             return;

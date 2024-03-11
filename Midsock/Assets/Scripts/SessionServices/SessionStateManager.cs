@@ -3,7 +3,6 @@ using FishNet.Managing.Scened;
 using FishNet.Object;
 using GameKit.Utilities.Types;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 /// <summary>
 /// Server side manager for the session. Does not do client side logic.
@@ -16,16 +15,14 @@ public class SessionStateManager : NetworkBehaviour
         MatchStarted
     }
 
-
     public struct SpawnCharactersBroadcast : IBroadcast
     {
         public string DisplayName;
     }
 
-    [FormerlySerializedAs("LobbyScene")]
     [SerializeField]
     [Scene]
-    private string lobbyScene;
+    private string _lobbyScene;
 
     private SessionState _sessionState;
 
@@ -40,7 +37,7 @@ public class SessionStateManager : NetworkBehaviour
         Debug.Log("Loading Lobby Scene...");
         _sessionState = SessionState.Lobby;
 
-        var lobbyScene = new SceneLookupData(this.lobbyScene);
+        var lobbyScene = new SceneLookupData(_lobbyScene);
         var sd = new SceneLoadData(lobbyScene);
         sd.PreferredActiveScene = lobbyScene;
 

@@ -204,9 +204,9 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 391655994}
   _networkObjectCache: {fileID: 391655994}
-  characterPrefab: {fileID: 4862868446977919199, guid: 6560cddbda52f2547a0f03da9463b656,
+  _characterPrefab: {fileID: 4862868446977919199, guid: 6560cddbda52f2547a0f03da9463b656,
     type: 3}
-  playerClientPrefab: {fileID: 7166494144591264408, guid: 26ce42a53f9ef1548aca563fb4c4a198,
+  _playerClientPrefab: {fileID: 7166494144591264408, guid: 26ce42a53f9ef1548aca563fb4c4a198,
     type: 3}
 --- !u!1 &757715346
 GameObject:
@@ -320,7 +320,7 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 1133531927}
   _networkObjectCache: {fileID: 1133531927}
-  LobbyScene: Assets/Scenes/Session/LobbyScene.unity
+  _lobbyScene: Assets/Scenes/Session/LobbyScene.unity
 --- !u!1 &2082795856
 GameObject:
   m_ObjectHideFlags: 0

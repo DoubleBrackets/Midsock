@@ -12691,12 +12691,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: febdfe6f49badbe42b616d4ee88876b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cubePositions:
+  _cubePositions:
   - {fileID: 101589770}
   - {fileID: 829288536}
   - {fileID: 1573398391}
   - {fileID: 1525556251}
-  transformIndex: 0
+  _transformIndex: 0
 --- !u!1 &1858837701
 GameObject:
   m_ObjectHideFlags: 0

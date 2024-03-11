@@ -260,8 +260,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f906822642023644ab9b65405cf01342, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chatText: {fileID: 8497583891363683498}
-  chatName: {fileID: 5966531496278229398}
+  _chatText: {fileID: 8497583891363683498}
+  _chatName: {fileID: 5966531496278229398}
 --- !u!1 &8144480605882309052
 GameObject:
   m_ObjectHideFlags: 0

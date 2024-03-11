@@ -24,7 +24,7 @@ public class RelayConnectionHandler : MonoBehaviour
     }
 
     [SerializeField]
-    private FishyUnityTransport fishyUnityTransport;
+    private FishyUnityTransport _fishyUnityTransport;
 
     public static RelayConnectionHandler Instance { get; private set; }
 
@@ -42,7 +42,7 @@ public class RelayConnectionHandler : MonoBehaviour
 
     private void OnDestroy()
     {
-        fishyUnityTransport.Shutdown();
+        _fishyUnityTransport.Shutdown();
     }
 
     /// <summary>
@@ -99,7 +99,7 @@ public class RelayConnectionHandler : MonoBehaviour
         catch (Exception e)
         {
             Debug.Log(e);
-            fishyUnityTransport.Shutdown();
+            _fishyUnityTransport.Shutdown();
             throw;
         }
     }
@@ -121,7 +121,7 @@ public class RelayConnectionHandler : MonoBehaviour
 
             SetupTransport(_currentJoinAllocation);
 
-            Debug.Log($"Joined Relay with code {joinCode} in region {_currentAllocation.Region}");
+            Debug.Log($"Joined Relay with code {joinCode} in region {_currentJoinAllocation.Region}");
 
             _relayState = RelayState.Client;
 
@@ -130,7 +130,7 @@ public class RelayConnectionHandler : MonoBehaviour
         catch (Exception e)
         {
             Debug.Log(e);
-            fishyUnityTransport.Shutdown();
+            _fishyUnityTransport.Shutdown();
             throw;
         }
     }
@@ -138,13 +138,13 @@ public class RelayConnectionHandler : MonoBehaviour
     private void SetupTransport(Allocation allocation)
     {
         ConfigureTransportType(out string connectionType);
-        fishyUnityTransport.SetRelayServerData(new RelayServerData(allocation, connectionType));
+        _fishyUnityTransport.SetRelayServerData(new RelayServerData(allocation, connectionType));
     }
 
     private void SetupTransport(JoinAllocation joinAllocation)
     {
         ConfigureTransportType(out string connectionType);
-        fishyUnityTransport.SetRelayServerData(new RelayServerData(joinAllocation, connectionType));
+        _fishyUnityTransport.SetRelayServerData(new RelayServerData(joinAllocation, connectionType));
     }
 
     private void ConfigureTransportType(out string connectionType)

@@ -5,37 +5,37 @@ using UnityEngine.UI;
 
 public class PlayerHealth : NetworkBehaviour
 {
-    public int maxHealth = 10;
+    public int _maxHealth = 10;
 
     [SyncVar]
-    public int health;
+    public int _health;
 
     [SerializeField]
-    private Slider healthSlider;
+    private Slider _healthSlider;
 
     [SerializeField]
-    private Slider healthSliderUI;
+    private Slider _healthSliderUI;
 
     private void Update()
     {
-        healthSlider.value = health / (float)maxHealth;
-        healthSliderUI.value = health / (float)maxHealth;
+        _healthSlider.value = _health / (float)_maxHealth;
+        _healthSliderUI.value = _health / (float)_maxHealth;
     }
 
     public override void OnStartClient()
     {
         base.OnStartClient();
-        health = maxHealth;
+        _health = _maxHealth;
         if (!IsOwner)
         {
-            healthSliderUI.gameObject.SetActive(false);
+            _healthSliderUI.gameObject.SetActive(false);
         }
     }
 
     [ServerRpc]
     private void TakeDamageServerRpc(PlayerHealth target, int damage)
     {
-        health -= damage;
+        _health -= damage;
     }
 
     public void ReceiveDamageServer(int damage)
@@ -45,6 +45,6 @@ public class PlayerHealth : NetworkBehaviour
             return;
         }
 
-        health -= damage;
+        _health -= damage;
     }
 }

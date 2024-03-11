@@ -1404,7 +1404,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -200, y: -34.9}
+  m_AnchoredPosition: {x: 200, y: 0}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &893542773
@@ -1671,7 +1671,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 117.24, y: 0}
+  m_AnchoredPosition: {x: 200, y: -35}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &978596675
@@ -1987,7 +1987,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 117.24, y: -35.62}
+  m_AnchoredPosition: {x: -200, y: -35}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1196333541
@@ -2733,11 +2733,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3c6bd1ca6512d540becec0960e663ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  joinCodeInput: {fileID: 978596675}
-  hostButton: {fileID: 641705973}
-  joinButton: {fileID: 893542773}
-  statusText: {fileID: 409147113}
-  regionDropdown: {fileID: 1196333541}
+  _joinCodeInput: {fileID: 978596675}
+  _hostButton: {fileID: 641705973}
+  _joinButton: {fileID: 893542773}
+  _statusText: {fileID: 409147113}
+  _regionDropdown: {fileID: 1196333541}
 --- !u!4 &1948105236
 Transform:
   m_ObjectHideFlags: 0

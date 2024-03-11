@@ -6,14 +6,14 @@ public class SceneBootstrap : MonoBehaviour
 {
     [SerializeField]
     [Scene]
-    private string startupScene;
+    private string _startupScene;
 
     // Start is called before the first frame update
     private void Start()
     {
-        if (startupScene != null)
+        if (_startupScene != null)
         {
-            SceneManager.LoadSceneAsync(startupScene, LoadSceneMode.Additive);
+            SceneManager.LoadSceneAsync(_startupScene, LoadSceneMode.Additive);
         }
     }
 }

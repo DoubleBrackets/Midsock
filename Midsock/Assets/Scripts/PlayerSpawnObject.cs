@@ -3,20 +3,20 @@ using UnityEngine;
 
 public class PlayerSpawnObject : NetworkBehaviour
 {
-    public GameObject objectToSpawn;
+    public GameObject _objectToSpawn;
 
     [HideInInspector]
-    public GameObject spawnedObject;
+    public GameObject _spawnedObject;
 
     private void Update()
     {
-        if (spawnedObject == null && Input.GetKeyDown(KeyCode.E))
+        if (_spawnedObject == null && Input.GetKeyDown(KeyCode.E))
         {
-            Debug.Log(objectToSpawn.name);
-            SpawnObjectServerRpc(objectToSpawn, transform, this);
+            Debug.Log(_objectToSpawn.name);
+            SpawnObjectServerRpc(_objectToSpawn, transform, this);
         }
 
-        if (spawnedObject != null && Input.GetKeyDown(KeyCode.E))
+        if (_spawnedObject != null && Input.GetKeyDown(KeyCode.E))
         {
             DespawnObjectServerRpc(this);
         }
@@ -44,12 +44,12 @@ public class PlayerSpawnObject : NetworkBehaviour
     [ObserversRpc]
     private void SpawnObject(GameObject obj, Transform player, PlayerSpawnObject self)
     {
-        self.spawnedObject = obj;
+        self._spawnedObject = obj;
     }
 
     [ServerRpc]
     private void DespawnObjectServerRpc(PlayerSpawnObject self)
     {
-        ServerManager.Despawn(spawnedObject);
+        ServerManager.Despawn(_spawnedObject);
     }
 }

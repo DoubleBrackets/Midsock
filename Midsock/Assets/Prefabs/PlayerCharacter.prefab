@@ -461,14 +461,14 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 2385966084816158117}
   _networkObjectCache: {fileID: 2385966084816158117}
-  walkingSpeed: 7.5
-  runningSpeed: 11.5
-  jumpSpeed: 8
-  gravity: 20
-  lookSpeed: 2
-  lookXLimit: 85
-  canMove: 1
-  cameraYOffset: 0.4
+  _walkingSpeed: 7.5
+  _runningSpeed: 11.5
+  _jumpSpeed: 8
+  _gravity: 20
+  _lookSpeed: 2
+  _lookXLimit: 45
+  _canMove: 1
+  _cameraYOffset: 0.4
 --- !u!114 &5548468658549331341
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -484,10 +484,10 @@ MonoBehaviour:
   _componentIndexCache: 1
   _addedNetworkObject: {fileID: 2385966084816158117}
   _networkObjectCache: {fileID: 2385966084816158117}
-  maxHealth: 10
-  health: 10
-  healthSlider: {fileID: 9078364916233994510}
-  healthSliderUI: {fileID: 6816872672184128329}
+  _maxHealth: 10
+  _health: 0
+  _healthSlider: {fileID: 9078364916233994510}
+  _healthSliderUI: {fileID: 6816872672184128329}
 --- !u!114 &2385966084816158117
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -521,7 +521,7 @@ MonoBehaviour:
   NetworkObserver: {fileID: 0}
   <PrefabId>k__BackingField: 0
   <SpawnableCollectionId>k__BackingField: 0
-  _scenePathHash: 584410112
+  _scenePathHash: 0
   <SceneId>k__BackingField: 0
   <AssetPathHash>k__BackingField: 14566731347051192359
 --- !u!114 &8711050914175120638
@@ -622,8 +622,8 @@ MonoBehaviour:
   _componentIndexCache: 3
   _addedNetworkObject: {fileID: 2385966084816158117}
   _networkObjectCache: {fileID: 2385966084816158117}
-  Damage: 1
-  cooldownTime: 0.3
+  _damage: 1
+  _cooldownTime: 0.3
 --- !u!1 &5596088349831760620
 GameObject:
   m_ObjectHideFlags: 0

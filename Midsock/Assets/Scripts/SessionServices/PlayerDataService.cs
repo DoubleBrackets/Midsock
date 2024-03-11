@@ -14,13 +14,15 @@ public class PlayerDataService : NetworkBehaviour
     [Serializable]
     public struct PlayerData
     {
-        public string playerName;
+        public string _playerName;
+
         public NetworkConnection Connection;
     }
 
-    public GameObject characterPrefab;
+    public GameObject _characterPrefab;
 
-    public GameObject playerClientPrefab;
+    public GameObject _playerClientPrefab;
+
     public static PlayerDataService Instance { get; private set; }
 
     [SyncObject]
@@ -45,7 +47,7 @@ public class PlayerDataService : NetworkBehaviour
     {
         _playerDataMap.Add(connection, new PlayerData
         {
-            playerName = "Player " + connection.ClientId,
+            _playerName = "Player " + connection.ClientId,
             Connection = connection
         });
 
@@ -57,7 +59,7 @@ public class PlayerDataService : NetworkBehaviour
 
     private void SpawnPlayerClient(NetworkConnection connection)
     {
-        GameObject spawned = Instantiate(playerClientPrefab);
+        GameObject spawned = Instantiate(_playerClientPrefab);
         ServerManager.Spawn(spawned, connection, gameObject.scene);
     }
 
@@ -71,12 +73,12 @@ public class PlayerDataService : NetworkBehaviour
     private void SpawnCharacter(NetworkConnection connection)
     {
         PlayerData playerData = _playerDataMap[connection];
-        Debug.Log($"Spawning character for {playerData.playerName}");
-        GameObject spawned = Instantiate(characterPrefab, Vector3.up * 5f, Quaternion.identity);
+        Debug.Log($"Spawning character for {playerData._playerName}");
+        GameObject spawned = Instantiate(_characterPrefab, Vector3.up * 5f, Quaternion.identity);
         ServerManager.Spawn(spawned, playerData.Connection);
         InstanceFinder.ServerManager.Broadcast(new SessionStateManager.SpawnCharactersBroadcast
         {
-            DisplayName = playerData.playerName
+            DisplayName = playerData._playerName
         });
     }
 
@@ -116,12 +118,12 @@ public class PlayerDataService : NetworkBehaviour
         Debug.Log($"Connection {conn.ClientId} is setting their player data");
         if (_playerDataMap.TryAdd(conn, playerData))
         {
-            Debug.Log($"Player {playerData.playerName} has joined the game");
+            Debug.Log($"Player {playerData._playerName} has joined the game");
         }
         else
         {
             _playerDataMap[conn] = playerData;
-            Debug.Log($"Player {playerData.playerName} has updated their data");
+            Debug.Log($"Player {playerData._playerName} has updated their data");
         }
     }
 }
