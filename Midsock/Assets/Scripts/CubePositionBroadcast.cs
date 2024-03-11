@@ -10,7 +10,7 @@ public class CubePositionBroadcast : MonoBehaviour
 {
     public List<Transform> cubePositions = new List<Transform>();
     public int transformIndex;
-    
+
     private void OnEnable()
     {
         InstanceFinder.ClientManager.RegisterBroadcast<PositionIndex>(OnPositionBroadcast);
@@ -19,10 +19,13 @@ public class CubePositionBroadcast : MonoBehaviour
 
     private void OnDisable()
     {
-        InstanceFinder.ClientManager.UnregisterBroadcast<PositionIndex>(OnPositionBroadcast);
-        InstanceFinder.ServerManager.UnregisterBroadcast<PositionIndex>(OnClientPositionBroadcast);
+        if (InstanceFinder.NetworkManager != null && InstanceFinder.NetworkManager.Initialized)
+        {
+            InstanceFinder.ClientManager.UnregisterBroadcast<PositionIndex>(OnPositionBroadcast);
+            InstanceFinder.ServerManager.UnregisterBroadcast<PositionIndex>(OnClientPositionBroadcast);
+        }
     }
-    
+
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Q))
@@ -45,10 +48,10 @@ public class CubePositionBroadcast : MonoBehaviour
                 });
             }
         }
-        
+
         transform.position = cubePositions[transformIndex].position;
     }
-    
+
     private void OnPositionBroadcast(PositionIndex index)
     {
         if (InstanceFinder.IsServer)
@@ -59,7 +62,7 @@ public class CubePositionBroadcast : MonoBehaviour
         Debug.Log("Client: Received position broadcast from Server");
         transformIndex = index.tIndex;
     }
-    
+
     private void OnClientPositionBroadcast(NetworkConnection networkConnection, PositionIndex index)
     {
         Debug.Log("Server: Received position broadcast from Client");
