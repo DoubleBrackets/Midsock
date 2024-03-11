@@ -1,12 +1,9 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using TMPro;
-using Unity.Services.Relay.Models;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,6 +12,10 @@ using UnityEngine.UI;
 /// </summary>
 public class ConnectionUIController : MonoBehaviour
 {
+    private const string AutoRegion = "Auto";
+
+    private const int GetRegionRetryTime = 10;
+
     [SerializeField]
     private TMP_InputField joinCodeInput;
 
@@ -30,27 +31,30 @@ public class ConnectionUIController : MonoBehaviour
     [SerializeField]
     private TMP_Dropdown regionDropdown;
 
-    private const string AutoRegion = "Auto";
-
-    private const int GetRegionRetryTime = 10;
-
-    private bool foundRegions;
+    private bool _foundRegions;
 
     private void Start()
     {
         hostButton.onClick.AddListener(OnHostButtonClicked);
         joinButton.onClick.AddListener(OnJoinButtonClicked);
 
-        foundRegions = false;
+        _foundRegions = false;
 
         SetupRegionDropdownAsync(gameObject.GetCancellationTokenOnDestroy()).Forget();
+    }
+
+
+    private void OnDestroy()
+    {
+        hostButton.onClick.RemoveListener(OnHostButtonClicked);
+        joinButton.onClick.RemoveListener(OnJoinButtonClicked);
     }
 
     private async UniTaskVoid SetupRegionDropdownAsync(CancellationToken token)
     {
         try
         {
-            List<Region> regions = await RelayConnectionHandler.Instance.GetRegionList(token);
+            var regions = await RelayConnectionHandler.Instance.GetRegionList(token);
 
             while (regions == null)
             {
@@ -60,7 +64,7 @@ public class ConnectionUIController : MonoBehaviour
 
                 token.ThrowIfCancellationRequested();
 
-                string status = $"Unable to get region list. Trying again in {GetRegionRetryTime} seconds";
+                var status = $"Unable to get region list. Trying again in {GetRegionRetryTime} seconds";
                 statusText.text = status;
                 Debug.Log(status);
                 await Task.Delay(TimeSpan.FromSeconds(GetRegionRetryTime), token);
@@ -68,7 +72,7 @@ public class ConnectionUIController : MonoBehaviour
 
             statusText.text = $"Found regions.";
 
-            foundRegions = true;
+            _foundRegions = true;
 
             var options = regions.Select(r => new TMP_Dropdown.OptionData(r.Id)).ToList();
 
@@ -87,20 +91,13 @@ public class ConnectionUIController : MonoBehaviour
         }
     }
 
-
-    private void OnDestroy()
-    {
-        hostButton.onClick.RemoveListener(OnHostButtonClicked);
-        joinButton.onClick.RemoveListener(OnJoinButtonClicked);
-    }
-
     private void OnHostButtonClicked()
     {
         var regionId = regionDropdown.options[regionDropdown.value].text;
 
         if (regionId == AutoRegion)
         {
-            regionId = String.Empty;
+            regionId = string.Empty;
         }
 
         RelayConnectionHandler.Instance.BeginHostingAsync(
@@ -110,7 +107,7 @@ public class ConnectionUIController : MonoBehaviour
 
     private void OnJoinButtonClicked()
     {
-        if (!foundRegions)
+        if (!_foundRegions)
         {
             DisplayInvalidJoinCode("No selected region...");
             return;
@@ -118,7 +115,7 @@ public class ConnectionUIController : MonoBehaviour
 
         regionDropdown.gameObject.SetActive(false);
 
-        string joinCode = joinCodeInput.text;
+        var joinCode = joinCodeInput.text;
         if (string.IsNullOrEmpty(joinCode))
         {
             DisplayInvalidJoinCode("Join code cannot be empty");

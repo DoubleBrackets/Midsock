@@ -1,39 +1,38 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using FishNet.Object;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class PlayerShootScript : NetworkBehaviour
 {
+    [FormerlySerializedAs("Damage")]
     [SerializeField]
-    private int Damage;
+    private int damage;
 
     [SerializeField]
     public float cooldownTime;
-    
-    private float nextFireTime;
+
+    private float _nextFireTime;
 
     private void Update()
     {
-        if(!base.IsOwner)
+        if (!IsOwner)
         {
             return;
         }
 
-        if (!base.IsClient)
+        if (!IsClient)
         {
             return;
         }
-        
-        if(Input.GetMouseButtonDown(0) && Time.time > nextFireTime)
+
+        if (Input.GetMouseButtonDown(0) && Time.time > _nextFireTime)
         {
-            nextFireTime = Time.time + cooldownTime;
+            _nextFireTime = Time.time + cooldownTime;
             Debug.Log("Shoot Client Side");
-            ShootServerRpc(Damage, Camera.main.transform.position, Camera.main.transform.forward);
+            ShootServerRpc(damage, Camera.main.transform.position, Camera.main.transform.forward);
         }
     }
-    
+
     [ServerRpc]
     private void ShootServerRpc(int damage, Vector3 pos, Vector3 dir)
     {
@@ -45,7 +44,7 @@ public class PlayerShootScript : NetworkBehaviour
             if (hit.transform.CompareTag("Player"))
             {
                 Debug.Log("Something was damaged");
-                PlayerHealth target = hit.transform.GetComponent<PlayerHealth>();
+                var target = hit.transform.GetComponent<PlayerHealth>();
                 target.ReceiveDamageServer(damage);
             }
         }

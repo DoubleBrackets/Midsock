@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using UnityEngine;
@@ -12,29 +9,29 @@ public class PlayerHealth : NetworkBehaviour
 
     [SyncVar]
     public int health;
-    
+
     [SerializeField]
     private Slider healthSlider;
 
     [SerializeField]
     private Slider healthSliderUI;
-    
+
+    private void Update()
+    {
+        healthSlider.value = health / (float)maxHealth;
+        healthSliderUI.value = health / (float)maxHealth;
+    }
+
     public override void OnStartClient()
     {
         base.OnStartClient();
         health = maxHealth;
-        if (!base.IsOwner)
+        if (!IsOwner)
         {
             healthSliderUI.gameObject.SetActive(false);
         }
     }
 
-    private void Update()
-    {
-        healthSlider.value = health / (float) maxHealth;
-        healthSliderUI.value = health / (float) maxHealth;
-    }
-    
     [ServerRpc]
     private void TakeDamageServerRpc(PlayerHealth target, int damage)
     {
@@ -43,10 +40,11 @@ public class PlayerHealth : NetworkBehaviour
 
     public void ReceiveDamageServer(int damage)
     {
-        if(!base.IsServer)
+        if (!IsServer)
         {
             return;
         }
+
         health -= damage;
     }
 }

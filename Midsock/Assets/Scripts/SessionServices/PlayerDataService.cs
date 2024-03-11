@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using FishNet;
 using FishNet.Connection;
@@ -12,27 +11,26 @@ using UnityEngine;
 /// </summary>
 public class PlayerDataService : NetworkBehaviour
 {
-    public static PlayerDataService Instance { get; private set; }
-    
-    public GameObject characterPrefab;
-    
-    public GameObject playerClientPrefab;
-    
-    [System.Serializable]
+    [Serializable]
     public struct PlayerData
     {
         public string playerName;
-        public NetworkConnection connection;
+        public NetworkConnection Connection;
     }
 
+    public GameObject characterPrefab;
+
+    public GameObject playerClientPrefab;
+    public static PlayerDataService Instance { get; private set; }
+
     [SyncObject]
-    private readonly SyncDictionary<NetworkConnection, PlayerData> playerDataMap = new();
+    private readonly SyncDictionary<NetworkConnection, PlayerData> _playerDataMap = new();
 
     private void Awake()
     {
         Instance = this;
     }
-    
+
     public override void OnStartClient()
     {
         base.OnStartClient();
@@ -41,16 +39,16 @@ public class PlayerDataService : NetworkBehaviour
             AddPlayerClient(LocalConnection);
         }
     }
-    
+
     [ServerRpc(RequireOwnership = false)]
     private void AddPlayerClient(NetworkConnection connection)
     {
-        playerDataMap.Add(connection, new PlayerData
+        _playerDataMap.Add(connection, new PlayerData
         {
             playerName = "Player " + connection.ClientId,
-            connection = connection
+            Connection = connection
         });
-        
+
         if (IsServer)
         {
             SpawnPlayerClient(connection);
@@ -59,7 +57,7 @@ public class PlayerDataService : NetworkBehaviour
 
     private void SpawnPlayerClient(NetworkConnection connection)
     {
-        GameObject spawned = Instantiate(playerClientPrefab);
+        var spawned = Instantiate(playerClientPrefab);
         ServerManager.Spawn(spawned, connection, gameObject.scene);
     }
 
@@ -72,59 +70,58 @@ public class PlayerDataService : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void SpawnCharacter(NetworkConnection connection)
     {
-        var playerData = playerDataMap[connection];
+        var playerData = _playerDataMap[connection];
         Debug.Log($"Spawning character for {playerData.playerName}");
-        GameObject spawned = Instantiate(characterPrefab, Vector3.up * 5f, Quaternion.identity);
-        ServerManager.Spawn(spawned, playerData.connection);
+        var spawned = Instantiate(characterPrefab, Vector3.up * 5f, Quaternion.identity);
+        ServerManager.Spawn(spawned, playerData.Connection);
         InstanceFinder.ServerManager.Broadcast(new SessionStateManager.SpawnCharactersBroadcast()
         {
-            displayName = playerData.playerName
+            DisplayName = playerData.playerName
         });
     }
 
     public PlayerData GetLocalClientPlayerData()
     {
-        if (!base.IsClient)
+        if (!IsClient)
         {
             return default;
         }
-        
-        if (playerDataMap.TryGetValue(LocalConnection, out var playerData))
+
+        if (_playerDataMap.TryGetValue(LocalConnection, out var playerData))
         {
             return playerData;
         }
 
         return default;
     }
-    
+
     public IEnumerable<PlayerData> GetAllPlayerData()
     {
-        return playerDataMap.Values;
+        return _playerDataMap.Values;
     }
 
     public void SetLocalClientPlayerData(PlayerData data)
     {
-        if (!base.IsClient)
+        if (!IsClient)
         {
             return;
         }
-        
+
         ServerSetPlayerData(LocalConnection, data);
     }
-    
+
     [ServerRpc]
     private void ServerSetPlayerData(NetworkConnection conn, PlayerData playerData)
     {
         Debug.Log($"Connection {conn.ClientId} is setting their player data");
-        if (playerDataMap.TryAdd(conn, playerData))
+        if (_playerDataMap.TryAdd(conn, playerData))
         {
             Debug.Log($"Player {playerData.playerName} has joined the game");
         }
         else
         {
-            playerDataMap[conn] = playerData;
+            _playerDataMap[conn] = playerData;
             Debug.Log($"Player {playerData.playerName} has updated their data");
         }
     }
-    
 }

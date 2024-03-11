@@ -1,12 +1,10 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using FishNet;
 using FishNet.Managing;
 using FishNet.Transporting;
 using FishNet.Transporting.Tugboat;
+using ParrelSync;
+using UnityEditor;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class SimpleConnector : MonoBehaviour
 {
@@ -22,12 +20,20 @@ public class SimpleConnector : MonoBehaviour
 
     [SerializeField]
     private ConnectionType awakeConnectType;
-    
+
     [SerializeField]
     private Tugboat tugboat;
-    
+
     [SerializeField]
     private NetworkManager networkManager;
+
+    private void Start()
+    {
+        if (connectOnStart)
+        {
+            StartConnection(awakeConnectType);
+        }
+    }
 
     private void OnEnable()
     {
@@ -35,7 +41,7 @@ public class SimpleConnector : MonoBehaviour
         InstanceFinder.ClientManager.OnClientConnectionState += OnClientConnectionState;
 #endif
     }
-    
+
     private void OnDisable()
     {
 #if UNITY_EDITOR
@@ -49,18 +55,10 @@ public class SimpleConnector : MonoBehaviour
         // Stop playing on all editor instances when the server stops (just a nice utility)
         if (state.ConnectionState == LocalConnectionState.Stopping)
         {
-            UnityEditor.EditorApplication.isPlaying = false;
+            EditorApplication.isPlaying = false;
         }
     }
 #endif
-
-    private void Start()
-    {
-        if (connectOnStart)
-        {
-            StartConnection(awakeConnectType);
-        }
-    }
 
     public void StartConnection(ConnectionType type)
     {
@@ -68,7 +66,7 @@ public class SimpleConnector : MonoBehaviour
         if (type == ConnectionType.Host)
         {
             tugboat.SetClientAddress("localhost");
-            if (ParrelSync.ClonesManager.IsClone())
+            if (ClonesManager.IsClone())
             {
                 // Clone; Join as a client
                 networkManager.ClientManager.StartConnection();
@@ -80,11 +78,11 @@ public class SimpleConnector : MonoBehaviour
                 networkManager.ClientManager.StartConnection();
             }
         }
-        else if(type == ConnectionType.Server)
+        else if (type == ConnectionType.Server)
         {
             networkManager.ServerManager.StartConnection();
         }
-        else if(type == ConnectionType.Client)
+        else if (type == ConnectionType.Client)
         {
             networkManager.ClientManager.StartConnection();
         }

@@ -1,18 +1,14 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using FishNet;
 using FishNet.Object;
-using UnityEngine;
 
 public class InSessionPlayerClient : NetworkBehaviour
 {
     public override void OnStartClient()
     {
         base.OnStartClient();
-        if (base.IsOwner)
+        if (IsOwner)
         {
-            if(base.IsHost)
+            if (IsHost)
             {
                 gameObject.name = "Player Client (Host)";
             }
@@ -25,11 +21,12 @@ public class InSessionPlayerClient : NetworkBehaviour
         {
             gameObject.name = "Player Client (Remote)";
         }
-        
-        InstanceFinder.ClientManager.RegisterBroadcast<SessionStateManager.SpawnCharactersBroadcast>(HandleCharacterSpawnedBroadcast);
+
+        InstanceFinder.ClientManager.RegisterBroadcast<SessionStateManager.SpawnCharactersBroadcast>(
+            HandleCharacterSpawnedBroadcast);
     }
 
-    
+
     private void HandleCharacterSpawnedBroadcast(SessionStateManager.SpawnCharactersBroadcast data)
     {
         // What.
