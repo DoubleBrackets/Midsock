@@ -13,6 +13,7 @@ using UnityEngine;
 /// </summary>
 public class SessionStateManager : NetworkBehaviour
 {
+    
     [SerializeField, Scene]
     private string LobbyScene;
     
@@ -46,17 +47,5 @@ public class SessionStateManager : NetworkBehaviour
     public struct SpawnCharactersBroadcast : IBroadcast
     {
         public string displayName;
-    }
-
-    private void OnGUI()
-    {
-        if (sessionState == SessionState.Lobby)
-        {
-            GUILayout.Label("Lobby");
-        }
-        else if (sessionState == SessionState.MatchStarted)
-        {
-            GUILayout.Label("Match Started");
-        }
     }
 }

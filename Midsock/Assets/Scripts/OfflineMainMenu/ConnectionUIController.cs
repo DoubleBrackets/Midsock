@@ -38,7 +38,7 @@ public class ConnectionUIController : MonoBehaviour
     
     private void OnHostButtonClicked()
     {
-        ConnectionStarter.Instance.BeginHostingAsync().Forget();
+        ConnectionHandler.Instance.BeginHostingAsync().Forget();
     }
 
     private void OnJoinButtonClicked()
@@ -50,7 +50,7 @@ public class ConnectionUIController : MonoBehaviour
             return;
         }
 
-        ConnectionStarter.Instance.JoinGameAsync(joinCode).Forget();
+        ConnectionHandler.Instance.JoinGameAsync(joinCode).Forget();
     }
     
     private void DisplayInvalidJoinCode(string message)

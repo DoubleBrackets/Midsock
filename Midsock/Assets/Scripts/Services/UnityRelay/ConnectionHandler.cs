@@ -15,9 +15,9 @@ using UnityEngine;
 /// <summary>
 /// Sets up UGS relay service and starts fishnet connection
 /// </summary>
-public class ConnectionStarter : MonoBehaviour
+public class ConnectionHandler : MonoBehaviour
 {
-    public static ConnectionStarter Instance { get; private set; }
+    public static ConnectionHandler Instance { get; private set; }
     
     [SerializeField]
     private FishyUnityTransport fishyUnityTransport;
@@ -124,5 +124,10 @@ public class ConnectionStarter : MonoBehaviour
         Debug.Log("Not webgl; using dtls");
         return "dtls";
 #endif
+    }
+
+    private void OnDestroy()
+    {
+        fishyUnityTransport.Shutdown();
     }
 }
