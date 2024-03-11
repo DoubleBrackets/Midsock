@@ -18,7 +18,7 @@ public class CubePositionBroadcast : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            var nextIndex = (transformIndex + 1) % cubePositions.Count;
+            int nextIndex = (transformIndex + 1) % cubePositions.Count;
             /*if (InstanceFinder.IsServer)
             {
                 Debug.Log("Server broadcast out");
@@ -30,7 +30,7 @@ public class CubePositionBroadcast : MonoBehaviour
             if (InstanceFinder.IsClient)
             {
                 Debug.Log("Client broadcast out");
-                InstanceFinder.ClientManager.Broadcast(new PositionIndex()
+                InstanceFinder.ClientManager.Broadcast(new PositionIndex
                 {
                     TIndex = nextIndex
                 });

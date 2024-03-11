@@ -57,7 +57,7 @@ public class PlayerDataService : NetworkBehaviour
 
     private void SpawnPlayerClient(NetworkConnection connection)
     {
-        var spawned = Instantiate(playerClientPrefab);
+        GameObject spawned = Instantiate(playerClientPrefab);
         ServerManager.Spawn(spawned, connection, gameObject.scene);
     }
 
@@ -70,11 +70,11 @@ public class PlayerDataService : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void SpawnCharacter(NetworkConnection connection)
     {
-        var playerData = _playerDataMap[connection];
+        PlayerData playerData = _playerDataMap[connection];
         Debug.Log($"Spawning character for {playerData.playerName}");
-        var spawned = Instantiate(characterPrefab, Vector3.up * 5f, Quaternion.identity);
+        GameObject spawned = Instantiate(characterPrefab, Vector3.up * 5f, Quaternion.identity);
         ServerManager.Spawn(spawned, playerData.Connection);
-        InstanceFinder.ServerManager.Broadcast(new SessionStateManager.SpawnCharactersBroadcast()
+        InstanceFinder.ServerManager.Broadcast(new SessionStateManager.SpawnCharactersBroadcast
         {
             DisplayName = playerData.playerName
         });
@@ -87,7 +87,7 @@ public class PlayerDataService : NetworkBehaviour
             return default;
         }
 
-        if (_playerDataMap.TryGetValue(LocalConnection, out var playerData))
+        if (_playerDataMap.TryGetValue(LocalConnection, out PlayerData playerData))
         {
             return playerData;
         }

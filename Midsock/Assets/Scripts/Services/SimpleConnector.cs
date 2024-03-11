@@ -87,7 +87,6 @@ public class SimpleConnector : MonoBehaviour
             networkManager.ClientManager.StartConnection();
         }
 
-        return;
 #endif
 
 #if UNITY_SERVER

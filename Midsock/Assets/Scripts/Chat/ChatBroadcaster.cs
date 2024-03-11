@@ -40,14 +40,14 @@ public class ChatBroadcaster : MonoBehaviour
     private void OnServerChatMessage(ChatMessage message)
     {
         Debug.Log("Client: Received chat message from Server, Displaying");
-        var newMessage = Instantiate(chatEntryPrefab, chatContainer);
+        GameObject newMessage = Instantiate(chatEntryPrefab, chatContainer);
         newMessage.GetComponent<ChatEntry>().SetChatText(message.Name, message.Message);
     }
 
     private void OnClientChatMessage(NetworkConnection connection, ChatMessage message)
     {
         Debug.Log("Server: Received chat message from Client, rebroadcasting");
-        InstanceFinder.ServerManager.Broadcast<ChatMessage>(message);
+        InstanceFinder.ServerManager.Broadcast(message);
     }
 
     private void OnSubmitMessage(string message)
@@ -58,18 +58,18 @@ public class ChatBroadcaster : MonoBehaviour
             return;
         }
 
-        var name = userName.text;
+        string name = userName.text;
         if (message == string.Empty || name == string.Empty)
         {
             return;
         }
 
-        var chatMessage = new ChatMessage()
+        var chatMessage = new ChatMessage
         {
             Name = name,
             Message = message
         };
 
-        InstanceFinder.ClientManager.Broadcast<ChatMessage>(chatMessage);
+        InstanceFinder.ClientManager.Broadcast(chatMessage);
     }
 }

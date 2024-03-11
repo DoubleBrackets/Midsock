@@ -23,7 +23,7 @@ public class PlayerController : NetworkBehaviour
     private Vector3 _moveDirection = Vector3.zero;
 
     private Camera _playerCamera;
-    private float _rotationX = 0;
+    private float _rotationX;
 
     private void Start()
     {
@@ -42,12 +42,12 @@ public class PlayerController : NetworkBehaviour
         isRunning = Input.GetKey(KeyCode.LeftShift);
 
         // We are grounded, so recalculate move direction based on axis
-        var forward = transform.TransformDirection(Vector3.forward);
-        var right = transform.TransformDirection(Vector3.right);
+        Vector3 forward = transform.TransformDirection(Vector3.forward);
+        Vector3 right = transform.TransformDirection(Vector3.right);
 
-        var curSpeedX = canMove ? (isRunning ? runningSpeed : walkingSpeed) * Input.GetAxis("Vertical") : 0;
-        var curSpeedY = canMove ? (isRunning ? runningSpeed : walkingSpeed) * Input.GetAxis("Horizontal") : 0;
-        var movementDirectionY = _moveDirection.y;
+        float curSpeedX = canMove ? (isRunning ? runningSpeed : walkingSpeed) * Input.GetAxis("Vertical") : 0;
+        float curSpeedY = canMove ? (isRunning ? runningSpeed : walkingSpeed) * Input.GetAxis("Horizontal") : 0;
+        float movementDirectionY = _moveDirection.y;
         _moveDirection = forward * curSpeedX + right * curSpeedY;
 
         if (Input.GetButton("Jump") && canMove && _characterController.isGrounded)

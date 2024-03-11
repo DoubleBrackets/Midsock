@@ -36,7 +36,7 @@ public class PlayerSpawnObject : NetworkBehaviour
     {
         Debug.Log(obj.name);
         Debug.Log(player.gameObject.name);
-        var spawned = Instantiate(obj, player.position + player.forward * 2, Quaternion.identity);
+        GameObject spawned = Instantiate(obj, player.position + player.forward * 2, Quaternion.identity);
         ServerManager.Spawn(spawned);
         SpawnObject(spawned, player, self);
     }

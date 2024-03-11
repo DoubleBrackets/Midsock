@@ -11,7 +11,7 @@ public class UtilsWindow : EditorWindow
     {
         EditorGUILayout.LabelField("Utils", EditorStyles.boldLabel);
 
-        var startupScenePath = prefs.StartupScenePath;
+        string startupScenePath = prefs.StartupScenePath;
 
         if (GUILayout.Button("Play Game"))
         {

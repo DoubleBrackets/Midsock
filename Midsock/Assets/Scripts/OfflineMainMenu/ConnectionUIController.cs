@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using TMPro;
+using Unity.Services.Relay.Models;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -54,7 +56,7 @@ public class ConnectionUIController : MonoBehaviour
     {
         try
         {
-            var regions = await RelayConnectionHandler.Instance.GetRegionList(token);
+            List<Region> regions = await RelayConnectionHandler.Instance.GetRegionList(token);
 
             while (regions == null)
             {
@@ -70,11 +72,11 @@ public class ConnectionUIController : MonoBehaviour
                 await Task.Delay(TimeSpan.FromSeconds(GetRegionRetryTime), token);
             }
 
-            statusText.text = $"Found regions.";
+            statusText.text = "Found regions.";
 
             _foundRegions = true;
 
-            var options = regions.Select(r => new TMP_Dropdown.OptionData(r.Id)).ToList();
+            List<TMP_Dropdown.OptionData> options = regions.Select(r => new TMP_Dropdown.OptionData(r.Id)).ToList();
 
             // QOS autodetect region isn't available in WebGL
 #if !UNITY_WEBGL || UNITY_EDITOR
@@ -93,7 +95,7 @@ public class ConnectionUIController : MonoBehaviour
 
     private void OnHostButtonClicked()
     {
-        var regionId = regionDropdown.options[regionDropdown.value].text;
+        string regionId = regionDropdown.options[regionDropdown.value].text;
 
         if (regionId == AutoRegion)
         {
@@ -115,7 +117,7 @@ public class ConnectionUIController : MonoBehaviour
 
         regionDropdown.gameObject.SetActive(false);
 
-        var joinCode = joinCodeInput.text;
+        string joinCode = joinCodeInput.text;
         if (string.IsNullOrEmpty(joinCode))
         {
             DisplayInvalidJoinCode("Join code cannot be empty");

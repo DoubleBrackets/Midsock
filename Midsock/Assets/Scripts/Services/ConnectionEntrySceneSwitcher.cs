@@ -5,6 +5,7 @@ using FishNet.Managing.Scened;
 using FishNet.Transporting;
 using GameKit.Utilities.Types;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnitySceneManager = UnityEngine.SceneManagement.SceneManager;
 
 /// <summary>
@@ -82,7 +83,7 @@ public class ConnectionEntrySceneSwitcher : MonoBehaviour
     private void OnSceneLoadEnd(SceneLoadEndEventArgs obj)
     {
         var onlineLoaded = false;
-        foreach (var s in obj.LoadedScenes)
+        foreach (Scene s in obj.LoadedScenes)
         {
             if (s.name == GetSceneName(onlineEntryScene))
             {
@@ -112,7 +113,7 @@ public class ConnectionEntrySceneSwitcher : MonoBehaviour
 
     private void UnloadOfflineScene()
     {
-        var scene = UnitySceneManager.GetSceneByName(GetSceneName(offlineEntryScene));
+        Scene scene = UnitySceneManager.GetSceneByName(GetSceneName(offlineEntryScene));
         if (string.IsNullOrEmpty(scene.name))
         {
             return;

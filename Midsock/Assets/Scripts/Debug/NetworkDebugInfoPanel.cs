@@ -1,4 +1,5 @@
 using FishNet;
+using FishNet.Managing.Timing;
 using FishNet.Object;
 using UnityEngine;
 
@@ -48,7 +49,7 @@ public class NetworkDebugInfoPanel : NetworkBehaviour
     {
         long ping;
         long pingWithTickRate;
-        var tm = InstanceFinder.TimeManager;
+        TimeManager tm = InstanceFinder.TimeManager;
         if (tm == null)
         {
             ping = 0;

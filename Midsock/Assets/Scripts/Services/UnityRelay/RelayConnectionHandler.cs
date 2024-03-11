@@ -56,7 +56,7 @@ public class RelayConnectionHandler : MonoBehaviour
         {
             await TryInitializeUnityServices(token);
             token.ThrowIfCancellationRequested();
-            var result = await RelayService.Instance.ListRegionsAsync();
+            List<Region> result = await RelayService.Instance.ListRegionsAsync();
             token.ThrowIfCancellationRequested();
             return result;
         }
@@ -137,13 +137,13 @@ public class RelayConnectionHandler : MonoBehaviour
 
     private void SetupTransport(Allocation allocation)
     {
-        ConfigureTransportType(out var connectionType);
+        ConfigureTransportType(out string connectionType);
         fishyUnityTransport.SetRelayServerData(new RelayServerData(allocation, connectionType));
     }
 
     private void SetupTransport(JoinAllocation joinAllocation)
     {
-        ConfigureTransportType(out var connectionType);
+        ConfigureTransportType(out string connectionType);
         fishyUnityTransport.SetRelayServerData(new RelayServerData(joinAllocation, connectionType));
     }
 
