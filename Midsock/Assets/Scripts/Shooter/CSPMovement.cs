@@ -43,9 +43,20 @@ public class CSPMovement : NetworkBehaviour
 
     private void TimeManager_OnTick()
     {
-        if (IsOwner)
+        if (base.IsOwner)
         {
+            Reconcile(default, false);
             BuildActions(out MoveData md);
+            Move(md, false);
+        }
+        if (base.IsServer)
+        {
+            Move(default, true);
+            ReconcileData rd = new ReconcileData()
+            {
+                Position = transform.position
+            };
+            Reconcile(rd, true);
         }
     }
 

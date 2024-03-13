@@ -92,7 +92,7 @@ public class SimpleConnector : MonoBehaviour
 #endif
 
 #if UNITY_SERVER
-        networkManager.ServerManager.StartConnection();
+        _networkManager.ServerManager.StartConnection();
         return;
 #endif
 
@@ -100,16 +100,16 @@ public class SimpleConnector : MonoBehaviour
         if (type == ConnectionType.Host)
         {
             // Local host; both server and client
-            networkManager.ServerManager.StartConnection();
-            networkManager.ClientManager.StartConnection();
+            _networkManager.ServerManager.StartConnection();
+            _networkManager.ClientManager.StartConnection();
         }
         else if(type == ConnectionType.Server)
         {
-            networkManager.ServerManager.StartConnection();
+            _networkManager.ServerManager.StartConnection();
         }
         else if(type == ConnectionType.Client)
         {
-            networkManager.ClientManager.StartConnection();
+            _networkManager.ClientManager.StartConnection();
         }
         
         return;
