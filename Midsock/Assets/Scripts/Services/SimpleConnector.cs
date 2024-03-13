@@ -2,9 +2,11 @@ using FishNet;
 using FishNet.Managing;
 using FishNet.Transporting;
 using FishNet.Transporting.Tugboat;
-using ParrelSync;
 using UnityEditor;
 using UnityEngine;
+#if UNITY_EDITOR
+using ParrelSync;
+#endif
 
 public class SimpleConnector : MonoBehaviour
 {
