@@ -156,7 +156,7 @@ public class RelayConnectionHandler : MonoBehaviour
     {
 #if UNITY_WEBGL && !UNITY_EDITOR
         Debug.Log("WebGL; using wss");
-        fishyUnityTransport.UseWebSockets = true;
+        _fishyUnityTransport.UseWebSockets = true;
         connectionType = "wss";
 #else
         Debug.Log("Not webgl; using dtls");
