@@ -80,9 +80,12 @@ public class RelayConnectionHandler : MonoBehaviour
             _currentAllocation = await RelayService.Instance.CreateAllocationAsync(4, regionId);
             token.ThrowIfCancellationRequested();
 
-            JoinCode =
+            string joinCode =
                 await RelayService.Instance.GetJoinCodeAsync(_currentAllocation.AllocationId);
             token.ThrowIfCancellationRequested();
+
+            // Codes are case insensitive, so show lower (easier to type)
+            JoinCode = joinCode.ToLower();
 
             SetupTransport(_currentAllocation);
 
@@ -177,7 +180,6 @@ public class RelayConnectionHandler : MonoBehaviour
             }
 
             await UnityServices.InitializeAsync();
-
             token.ThrowIfCancellationRequested();
 
             if (!AuthenticationService.Instance.IsSignedIn)
