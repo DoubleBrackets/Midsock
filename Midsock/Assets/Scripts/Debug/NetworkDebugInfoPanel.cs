@@ -1,9 +1,9 @@
 using FishNet;
 using FishNet.Managing.Timing;
-using FishNet.Object;
 using UnityEngine;
+using UnitySceneManager = UnityEngine.SceneManagement.SceneManager;
 
-public class NetworkDebugInfoPanel : NetworkBehaviour
+public class NetworkDebugInfoPanel : MonoBehaviour
 {
     private Rect _debugArea;
     private bool _showing = true;
@@ -32,17 +32,33 @@ public class NetworkDebugInfoPanel : NetworkBehaviour
         GUILayout.BeginArea(_debugArea);
 
         DrawPing();
-        DrawState();
+        DrawConnectionState();
+        DrawScenes();
 
         GUILayout.EndArea();
     }
 
     private void SetupAppearance()
     {
-        _textStyle.fontSize = 20;
+        _textStyle.fontSize = 18;
         _textStyle.fontStyle = FontStyle.Bold;
         _textStyle.normal.textColor = Color.green;
         _debugArea = new Rect(10, 10, 200, 200);
+    }
+
+    private void DrawScenes()
+    {
+        // list out all open scenee
+        var style = new GUIStyle(_textStyle);
+        style.fontStyle = FontStyle.Italic;
+        GUILayout.Label("Open Scenes:", style);
+        for (var i = 0; i < UnitySceneManager.sceneCount; i++)
+        {
+            style = new GUIStyle(_textStyle);
+            style.fontStyle = FontStyle.Normal;
+            style.fontSize = 14;
+            GUILayout.Label(UnitySceneManager.GetSceneAt(i).name, style);
+        }
     }
 
     private void DrawPing()
@@ -67,9 +83,14 @@ public class NetworkDebugInfoPanel : NetworkBehaviour
         GUILayout.Label($"Ping (Tickrate): {pingWithTickRate}ms", _textStyle);
     }
 
-    private void DrawState()
+    private void DrawConnectionState()
     {
-        GUILayout.Label($"IsServer: {IsServer}", _textStyle);
-        GUILayout.Label($"IsClient: {IsClient}", _textStyle);
+        bool IsServer = InstanceFinder.NetworkManager.IsServer;
+        bool IsClient = InstanceFinder.NetworkManager.IsClient;
+        bool IsHost = InstanceFinder.NetworkManager.IsHost;
+
+        string connectionState = IsHost ? "Host" : IsClient ? "Client" : IsServer ? "Server" : "Offline";
+
+        GUILayout.Label($"Connection: {connectionState}", _textStyle);
     }
 }

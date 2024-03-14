@@ -41,6 +41,8 @@ public class ConnectionUIController : MonoBehaviour
         _joinButton.onClick.AddListener(OnJoinButtonClicked);
         _regionDropdown.onValueChanged.AddListener(OnRegionChanged);
 
+        _joinCodeInput.onSubmit.AddListener(OnJoinCodeInputSubmitted);
+
         _foundRegions = false;
 
         SetupRegionDropdownAsync(gameObject.GetCancellationTokenOnDestroy()).Forget();
@@ -51,6 +53,12 @@ public class ConnectionUIController : MonoBehaviour
         _hostButton.onClick.RemoveListener(OnHostButtonClicked);
         _joinButton.onClick.RemoveListener(OnJoinButtonClicked);
         _regionDropdown.onValueChanged.RemoveListener(OnRegionChanged);
+        _joinCodeInput.onSubmit.RemoveListener(OnJoinCodeInputSubmitted);
+    }
+
+    private void OnJoinCodeInputSubmitted(string joinCode)
+    {
+        OnJoinButtonClicked();
     }
 
     private void OnRegionChanged(int index)

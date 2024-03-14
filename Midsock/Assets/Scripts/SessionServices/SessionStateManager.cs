@@ -1,6 +1,8 @@
+using FishNet;
 using FishNet.Broadcast;
 using FishNet.Managing.Scened;
 using FishNet.Object;
+using FishNet.Transporting;
 using GameKit.Utilities.Types;
 using UnityEngine;
 
@@ -24,7 +26,60 @@ public class SessionStateManager : NetworkBehaviour
     [Scene]
     private string _lobbyScene;
 
+    [SerializeField]
+    private ConnectionDataSO _connectionData;
+
     private SessionState _sessionState;
+
+    private void Start()
+    {
+        InstanceFinder.ClientManager.OnClientTimeOut += OnClientTimeOut;
+        InstanceFinder.ClientManager.OnClientConnectionState += OnClientConnectionState;
+
+        _connectionData.LastDisconnectReason = 0;
+    }
+
+    private void Update()
+    {
+        // disconnect if Q is pressed
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            if (IsServer)
+            {
+                NetworkManager.ServerManager.StopConnection(true);
+            }
+            else if (IsClient)
+            {
+                NetworkManager.ClientManager.StopConnection();
+                _connectionData.LastDisconnectReason |= ConnectionDataSO.DisconnectReason.ClientRequestedDisconnect;
+            }
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (IsServer)
+        {
+            NetworkManager.ServerManager.StopConnection(true);
+        }
+        else if (IsClient)
+        {
+            NetworkManager.ClientManager.StopConnection();
+        }
+    }
+
+    private void OnClientConnectionState(ClientConnectionStateArgs obj)
+    {
+        if (obj.ConnectionState == LocalConnectionState.Stopping)
+        {
+            _connectionData.LastDisconnectReason |= ConnectionDataSO.DisconnectReason.Disconnected;
+        }
+    }
+
+    private void OnClientTimeOut()
+    {
+        _connectionData.LastDisconnectReason |= ConnectionDataSO.DisconnectReason.ConnectionTimeout;
+    }
 
     public override void OnStartServer()
     {

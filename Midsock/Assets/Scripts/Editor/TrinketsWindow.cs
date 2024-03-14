@@ -4,29 +4,38 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class SimpleUtilsWindow : EditorWindow
+public class TrinketsWindow : EditorWindow
 {
     private const string PrefsPath = "Assets/Settings/Editor/User/SimpleUtilsPrefs.asset";
+
+    private bool _cleanSOsOnPlay = true;
 
     private string _lastEditedScenePath;
     private UtilsPrefs _prefs;
 
     private void OnGUI()
     {
-        EditorGUILayout.LabelField("Utils", EditorStyles.boldLabel);
+        EditorGUILayout.LabelField("Trinket Utils", EditorStyles.boldLabel);
 
         string startupScenePath = _prefs.StartupScenePath;
 
         if (GUILayout.Button("Play Game"))
         {
-            // Close open editor scenes
             EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo();
 
             _lastEditedScenePath = SceneManager.GetActiveScene().path;
 
-            EditorSceneManager.OpenScene(startupScenePath, OpenSceneMode.Single);
+            if (!SceneManager.GetSceneByPath(startupScenePath).isLoaded)
+            {
+                EditorSceneManager.OpenScene(startupScenePath, OpenSceneMode.Single);
+            }
+
             EditorApplication.ExecuteMenuItem("Edit/Play");
         }
+
+        EditorGUILayout.Space(10);
+
+        _cleanSOsOnPlay = EditorGUILayout.Toggle("clean SO on Play", _cleanSOsOnPlay);
 
         GUILayout.Space(10);
 
@@ -62,17 +71,40 @@ public class SimpleUtilsWindow : EditorWindow
         EditorApplication.playModeStateChanged += ModeChanged;
     }
 
+    [MenuItem("Tools/Trinkets")]
+    public static void ShowWindow()
+    {
+        GetWindow<TrinketsWindow>("Trinkets");
+    }
+
     private void ModeChanged(PlayModeStateChange param)
     {
         if (param == PlayModeStateChange.EnteredEditMode)
         {
             EditorSceneManager.OpenScene(_lastEditedScenePath, OpenSceneMode.Single);
         }
+        else if (param == PlayModeStateChange.EnteredPlayMode)
+        {
+            if (_cleanSOsOnPlay)
+            {
+                ResetSOValues();
+            }
+        }
     }
 
-    [MenuItem("MyTools/Utilities")]
-    public static void ShowWindow()
+    private void ResetSOValues()
     {
-        GetWindow<SimpleUtilsWindow>("MyTools");
+        // reset SOs
+        if (_cleanSOsOnPlay)
+        {
+            // Reset SO
+            string[] so = AssetDatabase.FindAssets("t:ScriptableObject", new[] { "Assets/ScriptableObjects" });
+            foreach (string guid in so)
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                var asset = AssetDatabase.LoadAssetAtPath<ScriptableObject>(path);
+                (asset as IValueResettable)?.ResetValues();
+            }
+        }
     }
 }
