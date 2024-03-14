@@ -30,14 +30,17 @@ public class PlayerDataNetworkService : NetworkBehaviour
 
     private void Awake()
     {
+        Debug.Log("PlayerDataNetworkService Awake");
         Instance = this;
     }
 
     public override void OnStartClient()
     {
+        Debug.Log("PlayerDataNetworkService OnStartClient");
         base.OnStartClient();
         if (IsClient)
         {
+            Debug.Log("PlayerDataNetworkService Spawning Client RPC");
             AddPlayerClient(LocalConnection);
         }
     }
@@ -45,6 +48,7 @@ public class PlayerDataNetworkService : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void AddPlayerClient(NetworkConnection connection)
     {
+        Debug.Log("Adding Player Client");
         _playerDataMap.Add(connection, new PlayerData
         {
             _playerName = "Player " + connection.ClientId,
@@ -53,6 +57,7 @@ public class PlayerDataNetworkService : NetworkBehaviour
 
         if (IsServer)
         {
+            Debug.Log("Spawning Player Client");
             SpawnPlayerClient(connection);
         }
     }

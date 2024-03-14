@@ -1,23 +1,21 @@
 using System;
-using Sirenix.OdinInspector;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "ConnectionState")]
-public class ConnectionDataSO : AnnotatedScriptableObject, IValueResettable
+public class ConnectionDataSO : AnnotatedScriptableObject
 {
-    [Flags]
     public enum DisconnectReason
     {
-        Disconnected = 1 << 0,
-        ClientRequestedDisconnect = 1 << 1,
-        ConnectionTimeout = 1 << 2
+        Disconnected,
+        ClientRequestedDisconnect,
+        ConnectionTimeout,
+        VersionCheckFailed
     }
 
-    [field: ShowInInspector]
-    public DisconnectReason LastDisconnectReason { get; set; }
+    public event Action<DisconnectReason> OnDisconnect;
 
-    public void ResetValues()
+    public void InvokeOnDisconnect(DisconnectReason reason)
     {
-        LastDisconnectReason = 0;
+        OnDisconnect?.Invoke(reason);
     }
 }

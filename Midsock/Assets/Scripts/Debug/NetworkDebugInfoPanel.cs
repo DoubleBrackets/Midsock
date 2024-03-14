@@ -43,7 +43,7 @@ public class NetworkDebugInfoPanel : MonoBehaviour
         _textStyle.fontSize = 18;
         _textStyle.fontStyle = FontStyle.Bold;
         _textStyle.normal.textColor = Color.green;
-        _debugArea = new Rect(10, 10, 200, 200);
+        _debugArea = new Rect(10, 10, 200, 1000);
     }
 
     private void DrawScenes()
@@ -58,6 +58,18 @@ public class NetworkDebugInfoPanel : MonoBehaviour
             style.fontStyle = FontStyle.Normal;
             style.fontSize = 14;
             GUILayout.Label(UnitySceneManager.GetSceneAt(i).name, style);
+        }
+
+        GameObject[] gameObjects = FindObjectsOfType<GameObject>();
+        var style2 = new GUIStyle(_textStyle);
+        style2.fontSize = 10;
+        style2.margin = new RectOffset(0, 0, 0, 0);
+        foreach (GameObject gameObject in gameObjects)
+        {
+            if (gameObject.transform.parent == null)
+            {
+                GUILayout.Label(gameObject.name, style2);
+            }
         }
     }
 

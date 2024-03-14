@@ -11,26 +11,41 @@ public class OnDisconnectPopupUI : MonoBehaviour
     private void Start()
     {
         _popupUI.Hide();
-        if (_connectionData.LastDisconnectReason != 0)
+        _connectionData.OnDisconnect += DisplayDisconnectReason;
+    }
+
+    private void OnDestroy()
+    {
+        _connectionData.OnDisconnect -= DisplayDisconnectReason;
+    }
+
+    private void DisplayDisconnectReason(ConnectionDataSO.DisconnectReason disconnectReason)
+    {
+        if (_popupUI.IsShowing)
         {
-            _popupUI.Show();
-            var reason = "Disconnected";
-
-            if ((_connectionData.LastDisconnectReason & ConnectionDataSO.DisconnectReason.ClientRequestedDisconnect) !=
-                0)
-            {
-                reason = "You left the game";
-            }
-            else if ((_connectionData.LastDisconnectReason & ConnectionDataSO.DisconnectReason.ConnectionTimeout) != 0)
-            {
-                reason = "Connection timed out";
-            }
-            else
-            {
-                reason = "Host closed the connection";
-            }
-
-            _popupUI.SetText(reason);
+            return;
         }
+
+        _popupUI.Show();
+        var reason = "Disconnected";
+
+        if (disconnectReason == ConnectionDataSO.DisconnectReason.ClientRequestedDisconnect)
+        {
+            reason = "You left the game";
+        }
+        else if (disconnectReason == ConnectionDataSO.DisconnectReason.ConnectionTimeout)
+        {
+            reason = "Connection timed out";
+        }
+        else if (disconnectReason == ConnectionDataSO.DisconnectReason.VersionCheckFailed)
+        {
+            reason = "Version check failed";
+        }
+        else
+        {
+            reason = "Host closed the connection";
+        }
+
+        _popupUI.SetText(reason);
     }
 }

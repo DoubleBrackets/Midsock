@@ -35,8 +35,6 @@ public class SessionStateManager : NetworkBehaviour
     {
         InstanceFinder.ClientManager.OnClientTimeOut += OnClientTimeOut;
         InstanceFinder.ClientManager.OnClientConnectionState += OnClientConnectionState;
-
-        _connectionData.LastDisconnectReason = 0;
     }
 
     private void Update()
@@ -51,7 +49,7 @@ public class SessionStateManager : NetworkBehaviour
             else if (IsClient)
             {
                 NetworkManager.ClientManager.StopConnection();
-                _connectionData.LastDisconnectReason |= ConnectionDataSO.DisconnectReason.ClientRequestedDisconnect;
+                _connectionData.InvokeOnDisconnect(ConnectionDataSO.DisconnectReason.ClientRequestedDisconnect);
             }
         }
     }
@@ -72,13 +70,13 @@ public class SessionStateManager : NetworkBehaviour
     {
         if (obj.ConnectionState == LocalConnectionState.Stopping)
         {
-            _connectionData.LastDisconnectReason |= ConnectionDataSO.DisconnectReason.Disconnected;
+            _connectionData.InvokeOnDisconnect(ConnectionDataSO.DisconnectReason.Disconnected);
         }
     }
 
     private void OnClientTimeOut()
     {
-        _connectionData.LastDisconnectReason |= ConnectionDataSO.DisconnectReason.ConnectionTimeout;
+        _connectionData.InvokeOnDisconnect(ConnectionDataSO.DisconnectReason.ConnectionTimeout);
     }
 
     public override void OnStartServer()

@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using FishNet;
 using FishNet.Managing;
@@ -36,6 +38,7 @@ public class ConnectionEntrySceneSwitcher : MonoBehaviour
         _networkManager.ServerManager.OnServerConnectionState += OnServerConnectionState;
         _networkManager.ClientManager.OnClientConnectionState += OnClientConnectionState;
         _networkManager.SceneManager.OnLoadEnd += OnSceneLoadEnd;
+        _networkManager.ClientManager.OnAuthenticated += OnAuthenticated;
     }
 
     private void OnDestroy()
@@ -43,6 +46,11 @@ public class ConnectionEntrySceneSwitcher : MonoBehaviour
         _networkManager.ServerManager.OnServerConnectionState -= OnServerConnectionState;
         _networkManager.ClientManager.OnClientConnectionState -= OnClientConnectionState;
         _networkManager.SceneManager.OnLoadEnd -= OnSceneLoadEnd;
+        _networkManager.ClientManager.OnAuthenticated -= OnAuthenticated;
+    }
+
+    private void OnAuthenticated()
+    {
     }
 
     private void OnServerConnectionState(ServerConnectionStateArgs args)
@@ -66,7 +74,7 @@ public class ConnectionEntrySceneSwitcher : MonoBehaviour
         else if (args.ConnectionState == LocalConnectionState.Stopped)
         {
             Debug.Log("Server stopped: Loading offline scenes");
-            LoadOfflineScene();
+            LoadOfflineScene(gameObject.GetCancellationTokenOnDestroy());
         }
     }
 
@@ -77,7 +85,7 @@ public class ConnectionEntrySceneSwitcher : MonoBehaviour
             // Only load offline scene if not also server. (in the case of a host)
             if (!_networkManager.IsServer)
             {
-                LoadOfflineScene();
+                LoadOfflineScene(gameObject.GetCancellationTokenOnDestroy());
             }
         }
     }
@@ -102,7 +110,7 @@ public class ConnectionEntrySceneSwitcher : MonoBehaviour
         }
     }
 
-    private async void LoadOfflineScene()
+    private async void LoadOfflineScene(CancellationToken token)
     {
         //Already in offline scene.
         if (UnitySceneManager.GetActiveScene().name == GetSceneName(_offlineEntryScene))
@@ -110,21 +118,34 @@ public class ConnectionEntrySceneSwitcher : MonoBehaviour
             return;
         }
 
-        // Unload all scenes except the core scene.
-        List<UniTask> unloadTasks = new();
-        foreach (Scene s in UnitySceneManager.GetAllScenes())
+        try
         {
-            if (s.name != GetSceneName(_coreSceneProtected))
+            // Unload all scenes except the core scene.
+            List<UniTask> unloadTasks = new();
+            foreach (Scene s in UnitySceneManager.GetAllScenes())
             {
-                unloadTasks.Add(UnitySceneManager.UnloadSceneAsync(s).ToUniTask());
+                if (s.name != GetSceneName(_coreSceneProtected))
+                {
+                    unloadTasks.Add(UnitySceneManager.UnloadSceneAsync(s).ToUniTask());
+                }
             }
+
+            token.ThrowIfCancellationRequested();
+
+            await UniTask.WhenAll(unloadTasks);
+            token.ThrowIfCancellationRequested();
+
+            //Only use scene manager if networking scenes.
+            await UnitySceneManager.LoadSceneAsync(_offlineEntryScene, LoadSceneMode.Additive);
+            token.ThrowIfCancellationRequested();
+
+            UnitySceneManager.SetActiveScene(UnitySceneManager.GetSceneByName(GetSceneName(_offlineEntryScene)));
         }
-
-        await UniTask.WhenAll(unloadTasks);
-
-        //Only use scene manager if networking scenes.
-        await UnitySceneManager.LoadSceneAsync(_offlineEntryScene, LoadSceneMode.Additive);
-        UnitySceneManager.SetActiveScene(UnitySceneManager.GetSceneByName(GetSceneName(_offlineEntryScene)));
+        catch (Exception e)
+        {
+            Debug.Log(e);
+            throw;
+        }
     }
 
     private void UnloadOfflineScene()

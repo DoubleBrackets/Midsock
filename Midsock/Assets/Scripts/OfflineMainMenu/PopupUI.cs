@@ -14,6 +14,8 @@ public class PopupUI : MonoBehaviour
     [SerializeField]
     private GameObject _popup;
 
+    public bool IsShowing => gameObject.activeSelf;
+
     private void Start()
     {
         _button.onClick.AddListener(OnButtonClicked);
