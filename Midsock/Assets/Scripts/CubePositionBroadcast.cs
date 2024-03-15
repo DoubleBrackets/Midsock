@@ -17,7 +17,7 @@ public class CubePositionBroadcast : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Q))
+        if (Input.GetKeyDown(KeyCode.E))
         {
             int nextIndex = (_transformIndex + 1) % _cubePositions.Count;
             /*if (InstanceFinder.IsServer)

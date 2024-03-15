@@ -1,13 +1,20 @@
+using System.Collections.Generic;
+using System.Linq;
 using FishNet;
+using FishNet.Connection;
 using FishNet.Managing.Timing;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnitySceneManager = UnityEngine.SceneManagement.SceneManager;
 
 public class NetworkDebugInfoPanel : MonoBehaviour
 {
-    private Rect _debugArea;
+    private Rect _debugAreaRect;
     private bool _showing = true;
+    private GUIStyle _smallTextStyle = new();
     private GUIStyle _textStyle = new();
+
+    private int currentPanel;
 
     private void Awake()
     {
@@ -16,9 +23,12 @@ public class NetworkDebugInfoPanel : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        for (var i = (int)KeyCode.Alpha1; i <= (int)KeyCode.Alpha9; i++)
         {
-            _showing = !_showing;
+            if (Input.GetKeyDown((KeyCode)i))
+            {
+                currentPanel = i - (int)KeyCode.Alpha1;
+            }
         }
     }
 
@@ -29,11 +39,23 @@ public class NetworkDebugInfoPanel : MonoBehaviour
             return;
         }
 
-        GUILayout.BeginArea(_debugArea);
+        GUILayout.BeginArea(_debugAreaRect);
 
-        DrawPing();
-        DrawConnectionState();
-        DrawScenes();
+        switch (currentPanel)
+        {
+            case 0:
+                DrawPing();
+                DrawConnectionState();
+                break;
+            case 1:
+                DrawScenes();
+                break;
+            case 2:
+                DrawClientPresentScenes();
+                break;
+            case 3:
+                break;
+        }
 
         GUILayout.EndArea();
     }
@@ -43,33 +65,50 @@ public class NetworkDebugInfoPanel : MonoBehaviour
         _textStyle.fontSize = 18;
         _textStyle.fontStyle = FontStyle.Bold;
         _textStyle.normal.textColor = Color.green;
-        _debugArea = new Rect(10, 10, 200, 1000);
+        _debugAreaRect = new Rect(10, 10, 1000, 1000);
+
+        _smallTextStyle = new GUIStyle(_textStyle);
+        _smallTextStyle.fontSize = 12;
+        _smallTextStyle.normal.textColor = Color.black;
+        _smallTextStyle.margin = new RectOffset(0, 0, 0, 0);
+    }
+
+    private void DrawClientPresentScenes()
+    {
+        // Show every connected scene and the clients in that scene
+        List<Scene> scenes = InstanceFinder.SceneManager.SceneConnections.Keys.ToList();
+        foreach (Scene scene in scenes)
+        {
+            GUILayout.Label(scene.name, _textStyle);
+            foreach (NetworkConnection pair in InstanceFinder.SceneManager.SceneConnections[scene])
+            {
+                GUILayout.Label(pair.ClientId.ToString(), _smallTextStyle);
+            }
+        }
     }
 
     private void DrawScenes()
     {
         // list out all open scenee
-        var style = new GUIStyle(_textStyle);
-        style.fontStyle = FontStyle.Italic;
-        GUILayout.Label("Open Scenes:", style);
+        GUILayout.Label("Open Scenes:", _textStyle);
+
+        Rect sceneObjectListRect = _debugAreaRect;
         for (var i = 0; i < UnitySceneManager.sceneCount; i++)
         {
-            style = new GUIStyle(_textStyle);
-            style.fontStyle = FontStyle.Normal;
-            style.fontSize = 14;
-            GUILayout.Label(UnitySceneManager.GetSceneAt(i).name, style);
-        }
+            GUILayout.BeginArea(sceneObjectListRect);
 
-        GameObject[] gameObjects = FindObjectsOfType<GameObject>();
-        var style2 = new GUIStyle(_textStyle);
-        style2.fontSize = 10;
-        style2.margin = new RectOffset(0, 0, 0, 0);
-        foreach (GameObject gameObject in gameObjects)
-        {
-            if (gameObject.transform.parent == null)
+            Scene scene = UnitySceneManager.GetSceneAt(i);
+            GUILayout.Label(scene.name, _textStyle);
+            // List out objects in the scene
+            GameObject[] gameObjects = scene.GetRootGameObjects();
+
+            foreach (GameObject go in gameObjects)
             {
-                GUILayout.Label(gameObject.name, style2);
+                GUILayout.Label(go.name, _smallTextStyle);
             }
+
+            GUILayout.EndArea();
+            sceneObjectListRect.x += 200;
         }
     }
 

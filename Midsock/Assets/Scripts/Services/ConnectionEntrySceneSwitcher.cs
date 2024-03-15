@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
@@ -118,34 +117,32 @@ public class ConnectionEntrySceneSwitcher : MonoBehaviour
             return;
         }
 
-        try
+        // Unload all scenes except the core scene.
+        List<UniTask> unloadTasks = new();
+        for (var i = 0; i < UnitySceneManager.sceneCount; i++)
         {
-            // Unload all scenes except the core scene.
-            List<UniTask> unloadTasks = new();
-            foreach (Scene s in UnitySceneManager.GetAllScenes())
+            Scene s = UnitySceneManager.GetSceneAt(i);
+            if (!s.IsValid())
             {
-                if (s.name != GetSceneName(_coreSceneProtected))
-                {
-                    unloadTasks.Add(UnitySceneManager.UnloadSceneAsync(s).ToUniTask());
-                }
+                continue;
             }
 
-            token.ThrowIfCancellationRequested();
-
-            await UniTask.WhenAll(unloadTasks);
-            token.ThrowIfCancellationRequested();
-
-            //Only use scene manager if networking scenes.
-            await UnitySceneManager.LoadSceneAsync(_offlineEntryScene, LoadSceneMode.Additive);
-            token.ThrowIfCancellationRequested();
-
-            UnitySceneManager.SetActiveScene(UnitySceneManager.GetSceneByName(GetSceneName(_offlineEntryScene)));
+            if (s.name != GetSceneName(_coreSceneProtected))
+            {
+                unloadTasks.Add(UnitySceneManager.UnloadSceneAsync(s).ToUniTask());
+            }
         }
-        catch (Exception e)
-        {
-            Debug.Log(e);
-            throw;
-        }
+
+        token.ThrowIfCancellationRequested();
+
+        await UniTask.WhenAll(unloadTasks);
+        token.ThrowIfCancellationRequested();
+
+        //Only use scene manager if networking scenes.
+        await UnitySceneManager.LoadSceneAsync(_offlineEntryScene, LoadSceneMode.Additive);
+        token.ThrowIfCancellationRequested();
+
+        UnitySceneManager.SetActiveScene(UnitySceneManager.GetSceneByName(GetSceneName(_offlineEntryScene)));
     }
 
     private void UnloadOfflineScene()
