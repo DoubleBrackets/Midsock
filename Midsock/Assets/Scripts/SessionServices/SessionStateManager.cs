@@ -1,13 +1,10 @@
-using System.Linq;
 using FishNet;
 using FishNet.Broadcast;
-using FishNet.Connection;
 using FishNet.Managing.Scened;
 using FishNet.Object;
 using FishNet.Transporting;
 using GameKit.Utilities.Types;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Server side manager for the session. Does not do client side logic.
@@ -34,13 +31,10 @@ public class SessionStateManager : NetworkBehaviour
 
     private SessionState _sessionState;
 
-    private Scene lobbyHandle;
-
     private void Start()
     {
         InstanceFinder.ClientManager.OnClientTimeOut += OnClientTimeOut;
         InstanceFinder.ClientManager.OnClientConnectionState += OnClientConnectionState;
-        InstanceFinder.ServerManager.OnRemoteConnectionState += OnRemoteConnectionState;
 
         SceneManager.OnLoadEnd += OnSceneLoadEnd;
     }
@@ -77,16 +71,8 @@ public class SessionStateManager : NetworkBehaviour
     private void OnSceneLoadEnd(SceneLoadEndEventArgs obj)
     {
         //Only Register on Server
-        if (!obj.QueueData.AsServer)
+        if (!obj.QueueData.AsServer || obj.LoadedScenes.Length == 0)
         {
-            return;
-        }
-
-        Debug.Log("Scene Loaded : " + obj.LoadedScenes[0].name);
-        if (obj.LoadedScenes.Select(a => a.name).Contains(_lobbyScene.PathToSceneName()))
-        {
-            lobbyHandle = obj.LoadedScenes.First(a => a.name == _lobbyScene.PathToSceneName());
-            Debug.Log($"Lobby scene registered {lobbyHandle}");
         }
     }
 
@@ -95,34 +81,7 @@ public class SessionStateManager : NetworkBehaviour
         base.OnStartClient();
         if (IsHost)
         {
-            LoadConnectionIntoLobby(LocalConnection);
         }
-    }
-
-    private void OnRemoteConnectionState(NetworkConnection connection, RemoteConnectionStateArgs state)
-    {
-        // load client into lobby scene
-        if (state.ConnectionState == RemoteConnectionState.Started)
-        {
-            LoadConnectionIntoLobby(connection);
-        }
-    }
-
-    private void LoadConnectionIntoLobby(NetworkConnection connection)
-    {
-        Debug.Log($"Loading connection into lobby scene: {connection.ClientId}");
-        var scene = new SceneLookupData(_lobbyScene);
-
-        if (lobbyHandle.IsValid())
-        {
-            Debug.Log(lobbyHandle.name);
-            scene = new SceneLookupData(lobbyHandle.handle);
-        }
-
-        var sd = new SceneLoadData(scene);
-        sd.PreferredActiveScene = scene;
-
-        SceneManager.LoadConnectionScenes(connection, sd);
     }
 
     private void OnClientConnectionState(ClientConnectionStateArgs obj)
@@ -153,6 +112,6 @@ public class SessionStateManager : NetworkBehaviour
         var sd = new SceneLoadData(lobbyScene);
         sd.PreferredActiveScene = lobbyScene;
 
-        // SceneManager.LoadGlobalScenes(sd);
+        SceneManager.LoadGlobalScenes(sd);
     }
 }

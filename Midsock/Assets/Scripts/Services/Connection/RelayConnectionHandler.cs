@@ -84,8 +84,8 @@ public class RelayConnectionHandler : MonoBehaviour
                 await RelayService.Instance.GetJoinCodeAsync(_currentAllocation.AllocationId);
             token.ThrowIfCancellationRequested();
 
-            // Codes are case insensitive, so show lower (easier to type)
-            JoinCode = joinCode.ToLower();
+            // Codes are case insensitive, leave as upper since it's easier to read
+            JoinCode = joinCode;
 
             SetupTransport(_currentAllocation);
 

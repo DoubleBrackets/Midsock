@@ -48,7 +48,7 @@ public class NetworkDebugInfoPanel : MonoBehaviour
                 DrawConnectionState();
                 break;
             case 1:
-                DrawScenes();
+                DrawSceneGameObjects();
                 break;
             case 2:
                 DrawClientPresentScenes();
@@ -87,11 +87,9 @@ public class NetworkDebugInfoPanel : MonoBehaviour
         }
     }
 
-    private void DrawScenes()
+    private void DrawSceneGameObjects()
     {
-        // list out all open scenee
-        GUILayout.Label("Open Scenes:", _textStyle);
-
+        // Show every scene and the objects in that scene
         Rect sceneObjectListRect = _debugAreaRect;
         for (var i = 0; i < UnitySceneManager.sceneCount; i++)
         {
@@ -143,5 +141,9 @@ public class NetworkDebugInfoPanel : MonoBehaviour
         string connectionState = IsHost ? "Host" : IsClient ? "Client" : IsServer ? "Server" : "Offline";
 
         GUILayout.Label($"Connection: {connectionState}", _textStyle);
+        if (IsClient)
+        {
+            GUILayout.Label($"ClientID: {InstanceFinder.ClientManager.Connection.ClientId}", _textStyle);
+        }
     }
 }
