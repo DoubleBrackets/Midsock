@@ -1042,7 +1042,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c71fd7f855ec523429999fc4e14a1928, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _overrideType: 3
+  _overrideType: 2
   _updateHostVisibility: 1
   _observerConditions: []
 --- !u!136 &3240223272224073626
@@ -1065,7 +1065,7 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.7
-  m_Height: 2.1
+  m_Height: 2.25
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &-2015213642408062036
@@ -1099,7 +1099,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _componentIndexCache: 4
-  _addedNetworkObject: {fileID: 0}
+  _addedNetworkObject: {fileID: 2385966084816158117}
   _networkObjectCache: {fileID: 2385966084816158117}
   _characterController: {fileID: 5884867121818959981}
   _pushForce: 8

@@ -1,10 +1,18 @@
 using Cinemachine;
+using FishNet.Broadcast;
+using FishNet.Connection;
 using FishNet.Object;
 using UnityEngine;
 
 //This is made by Bobsi Unity - Youtube
 public class PlayerController : NetworkBehaviour
 {
+    public struct TeleportBroadcast : IBroadcast
+    {
+        public NetworkConnection target;
+        public Vector3 position;
+    }
+
     [Header("Base setup")]
 
     public float _walkingSpeed = 7.5f;
@@ -97,12 +105,22 @@ public class PlayerController : NetworkBehaviour
         {
             _playerCamera.Priority = 20;
             gameObject.name = "Player Character (Local)";
+
+            ClientManager.RegisterBroadcast<TeleportBroadcast>(OnTeleport);
         }
         else
         {
             _playerCamera.Priority = 0;
             gameObject.GetComponent<PlayerController>().enabled = false;
             gameObject.name = "Player Character (Remote)";
+        }
+    }
+
+    private void OnTeleport(TeleportBroadcast obj)
+    {
+        if (obj.target == LocalConnection && IsOwner)
+        {
+            transform.position = obj.position;
         }
     }
 }

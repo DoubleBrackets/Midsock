@@ -19,6 +19,12 @@ public class SessionStateManager : NetworkBehaviour
         MatchStarted
     }
 
+    private struct MovingCharacter
+    {
+        public Vector3 destinationPos;
+        public NetworkObject characterNob;
+    }
+
     [SerializeField]
     [Scene]
     private string _lobbyScene;
@@ -28,7 +34,7 @@ public class SessionStateManager : NetworkBehaviour
 
     private Dictionary<NetworkConnection, Scene> _connectionScenes = new();
 
-    private Dictionary<NetworkConnection, Scene> _removeQueue = new();
+    private Dictionary<NetworkConnection, MovingCharacter> _inTransitCharacters = new();
 
     private SessionState _sessionState;
 
@@ -81,9 +87,12 @@ public class SessionStateManager : NetworkBehaviour
         }
 
         // make sure a client is finished loading into a scene before allowing them to switch scenes again
-        if (_removeQueue.ContainsKey(args.Connection))
+        // Also move the character to the destination position
+        if (_inTransitCharacters.ContainsKey(args.Connection))
         {
-            _removeQueue.Remove(args.Connection);
+            /*_inTransitCharacters[args.Connection].characterNob.transform.position =
+                _inTransitCharacters[args.Connection].destinationPos;*/
+            _inTransitCharacters.Remove(args.Connection);
         }
     }
 
@@ -155,15 +164,15 @@ public class SessionStateManager : NetworkBehaviour
         SceneManager.UnloadConnectionScenes(connection, sceneLoadData);
     }
 
-    public void MoveConnection(NetworkConnection playerOwner, string targetScene)
+    public void MoveConnection(NetworkConnection playerOwner, string targetScene, Vector3 destPos)
     {
-        MoveConnectionRPC(playerOwner, targetScene);
+        MoveConnectionRPC(playerOwner, targetScene, destPos);
     }
 
     [ServerRpc(RequireOwnership = false)]
-    private void MoveConnectionRPC(NetworkConnection playerOwner, string targetScene)
+    private void MoveConnectionRPC(NetworkConnection playerOwner, string targetScene, Vector3 destPos)
     {
-        if (_removeQueue.ContainsKey(playerOwner))
+        if (_inTransitCharacters.ContainsKey(playerOwner))
         {
             Debug.Log($"{playerOwner.ClientId} is already in the process of moving");
             return;
@@ -177,6 +186,16 @@ public class SessionStateManager : NetworkBehaviour
         LoadConnectionIntoExistingScene(playerOwner, targetScene, new[] { targetNob });
         UnloadConnectionFromScene(playerOwner, leavingScene.name, targetScene);
 
-        _removeQueue.Add(playerOwner, leavingScene);
+        ServerManager.Broadcast(new PlayerController.TeleportBroadcast
+        {
+            target = playerOwner,
+            position = destPos
+        });
+
+        _inTransitCharacters.Add(playerOwner, new MovingCharacter
+        {
+            characterNob = targetNob,
+            destinationPos = destPos
+        });
     }
 }

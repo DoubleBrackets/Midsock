@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6abf09e3befa4445aebb4a942eaa116, type: 3}
+  m_Name: PlaygroundToSubspace
+  m_EditorClassIdentifier: 
+  Description: 
+  <DestinationScene>k__BackingField: Assets/Scenes/Session/SubspaceScene.unity
+  <DestinationPosition>k__BackingField: {x: -13.3, y: 2.32, z: 152.9}
+  <Entrance>k__BackingField: 'EntranceToSubspace
+
+    Assets/Scenes/Session/PlaygroundScene.unity'
+  <Exit>k__BackingField: 'ExitFromPlayground
+
+    Assets/Scenes/Session/SubspaceScene.unity'
