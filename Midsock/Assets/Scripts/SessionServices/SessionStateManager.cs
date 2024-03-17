@@ -65,6 +65,14 @@ public class SessionStateManager : NetworkBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        if (IsServer)
+        {
+            ServerManager.StopConnection(false);
+        }
+    }
+
     private void OnClientPresenceChangeEnd(ClientPresenceChangeEventArgs args)
     {
         if (!args.Added)
