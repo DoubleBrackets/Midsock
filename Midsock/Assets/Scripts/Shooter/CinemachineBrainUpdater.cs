@@ -12,6 +12,11 @@ public class CinemachineBrainUpdater : MonoBehaviour
         InstanceFinder.TimeManager.OnPostTick += OnPostTick;
     }
 
+    private void OnDestroy()
+    {
+        InstanceFinder.TimeManager.OnPostTick -= OnPostTick;
+    }
+
     private void OnPostTick()
     {
         _cinemachineBrain.ManualUpdate();

@@ -1098,8 +1098,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _characterController: {fileID: 5884867121818959981}
-  _pushForce: 10
-  _upwardForce: 4
+  _pushForce: 8
+  _upwardForce: 3.5
+  _maxForce: 15
 --- !u!1 &5995995251478644583
 GameObject:
   m_ObjectHideFlags: 0
