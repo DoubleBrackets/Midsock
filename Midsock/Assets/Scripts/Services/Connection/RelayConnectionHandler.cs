@@ -10,6 +10,9 @@ using Unity.Services.Core;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using UnityEngine;
+#if UNITY_EDITOR
+using Sirenix.Utilities.Editor;
+#endif
 
 /// <summary>
 ///     Handles setting up Unity Relay service and hosting/connecting
@@ -38,11 +41,6 @@ public class RelayConnectionHandler : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-    }
-
-    private void OnDestroy()
-    {
-        _fishyUnityTransport.Shutdown();
     }
 
     /// <summary>
@@ -75,6 +73,7 @@ public class RelayConnectionHandler : MonoBehaviour
     /// <returns></returns>
     public async UniTask<string> BeginHostingAsync(string regionId, CancellationToken token)
     {
+        Debug.Log($"Trying to host on region {regionId}");
         try
         {
             _currentAllocation = await RelayService.Instance.CreateAllocationAsync(4, regionId);
@@ -86,7 +85,9 @@ public class RelayConnectionHandler : MonoBehaviour
 
             // Codes are case insensitive, leave as upper since it's easier to read
             JoinCode = joinCode;
-
+#if UNITY_EDITOR
+            Clipboard.Copy(JoinCode);
+#endif
             SetupTransport(_currentAllocation);
 
             Debug.Log($"Created Relay with code {JoinCode} in region {_currentAllocation.Region}");

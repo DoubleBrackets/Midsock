@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using FishNet;
 using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
@@ -19,24 +18,23 @@ public class PlayerDataNetworkService : NetworkBehaviour
         public NetworkConnection Connection;
     }
 
-    public GameObject _characterPrefab;
+    [SerializeField]
+    private NetworkObject _playerClientPrefab;
 
-    public GameObject _playerClientPrefab;
-
-    public static PlayerDataNetworkService Instance { get; private set; }
+    [SerializeField]
+    private Transform _playerClientParent;
 
     [SyncObject]
     private readonly SyncDictionary<NetworkConnection, PlayerData> _playerDataMap = new();
 
-    private void Awake()
+    public override void OnStartServer()
     {
-        Debug.Log("PlayerDataNetworkService Awake");
-        Instance = this;
+        SessionServiceFinder.SetPlayerDataNetworkService(this);
     }
 
     public override void OnStartClient()
     {
-        Debug.Log("PlayerDataNetworkService OnStartClient");
+        SessionServiceFinder.SetPlayerDataNetworkService(this);
         base.OnStartClient();
         if (IsClient)
         {
@@ -64,37 +62,14 @@ public class PlayerDataNetworkService : NetworkBehaviour
 
     private void SpawnPlayerClient(NetworkConnection connection)
     {
-        GameObject spawned = Instantiate(_playerClientPrefab);
+        NetworkObject spawned = Instantiate(_playerClientPrefab);
         ServerManager.Spawn(spawned, connection, gameObject.scene);
+        spawned.transform.parent = _playerClientParent;
     }
 
-    public void SpawnCharacterClient(NetworkConnection connection)
+    public PlayerData GetPlayerData(NetworkConnection connection)
     {
-        Debug.Log("Spawning Player...");
-        SpawnCharacter(connection);
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    private void SpawnCharacter(NetworkConnection connection)
-    {
-        PlayerData playerData = _playerDataMap[connection];
-        Debug.Log($"Spawning character for {playerData._playerName}");
-        GameObject spawned = Instantiate(_characterPrefab, Vector3.up * 5f, Quaternion.identity);
-        ServerManager.Spawn(spawned, playerData.Connection);
-        InstanceFinder.ServerManager.Broadcast(new SessionStateManager.SpawnCharactersBroadcast
-        {
-            DisplayName = playerData._playerName
-        });
-    }
-
-    public PlayerData GetLocalClientPlayerData()
-    {
-        if (!IsClient)
-        {
-            return default;
-        }
-
-        if (_playerDataMap.TryGetValue(LocalConnection, out PlayerData playerData))
+        if (_playerDataMap.TryGetValue(connection, out PlayerData playerData))
         {
             return playerData;
         }
@@ -105,16 +80,6 @@ public class PlayerDataNetworkService : NetworkBehaviour
     public IEnumerable<PlayerData> GetAllPlayerData()
     {
         return _playerDataMap.Values;
-    }
-
-    public void SetLocalClientPlayerData(PlayerData data)
-    {
-        if (!IsClient)
-        {
-            return;
-        }
-
-        ServerSetPlayerData(LocalConnection, data);
     }
 
     [ServerRpc]

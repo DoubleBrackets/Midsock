@@ -1,13 +1,15 @@
+using System.Collections.Generic;
 using FishNet;
-using FishNet.Broadcast;
+using FishNet.Connection;
 using FishNet.Managing.Scened;
 using FishNet.Object;
 using FishNet.Transporting;
 using GameKit.Utilities.Types;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
-/// Server side manager for the session. Does not do client side logic.
+/// Manages the game state
 /// </summary>
 public class SessionStateManager : NetworkBehaviour
 {
@@ -17,11 +19,6 @@ public class SessionStateManager : NetworkBehaviour
         MatchStarted
     }
 
-    public struct SpawnCharactersBroadcast : IBroadcast
-    {
-        public string DisplayName;
-    }
-
     [SerializeField]
     [Scene]
     private string _lobbyScene;
@@ -29,14 +26,25 @@ public class SessionStateManager : NetworkBehaviour
     [SerializeField]
     private ConnectionDataSO _connectionData;
 
+    private Dictionary<NetworkConnection, Scene> _connectionScenes = new();
+
+    private Dictionary<NetworkConnection, Scene> _removeQueue = new();
+
     private SessionState _sessionState;
+
+    private bool didDisconnectManually;
+
+    private void Awake()
+    {
+        SessionServiceFinder.SetSessionStateManager(this);
+    }
 
     private void Start()
     {
         InstanceFinder.ClientManager.OnClientTimeOut += OnClientTimeOut;
         InstanceFinder.ClientManager.OnClientConnectionState += OnClientConnectionState;
 
-        SceneManager.OnLoadEnd += OnSceneLoadEnd;
+        SceneManager.OnClientPresenceChangeEnd += OnClientPresenceChangeEnd;
     }
 
     private void Update()
@@ -50,38 +58,31 @@ public class SessionStateManager : NetworkBehaviour
             }
             else if (IsClient)
             {
-                NetworkManager.ClientManager.StopConnection();
+                // This needs to be called before disconnecting so the disconnect popup doesn't show generic disconnect
                 _connectionData.InvokeOnDisconnect(ConnectionDataSO.DisconnectReason.ClientRequestedDisconnect);
+                NetworkManager.ClientManager.StopConnection();
             }
         }
     }
 
-    private void OnDestroy()
+    private void OnClientPresenceChangeEnd(ClientPresenceChangeEventArgs args)
     {
-        if (IsServer)
+        if (!args.Added)
         {
-            NetworkManager.ServerManager.StopConnection(true);
+            return;
         }
-        else if (IsClient)
-        {
-            NetworkManager.ClientManager.StopConnection();
-        }
-    }
 
-    private void OnSceneLoadEnd(SceneLoadEndEventArgs obj)
-    {
-        //Only Register on Server
-        if (!obj.QueueData.AsServer || obj.LoadedScenes.Length == 0)
+        // make sure a client is finished loading into a scene before allowing them to switch scenes again
+        if (_removeQueue.ContainsKey(args.Connection))
         {
+            _removeQueue.Remove(args.Connection);
         }
     }
 
     public override void OnStartClient()
     {
         base.OnStartClient();
-        if (IsHost)
-        {
-        }
+        LoadIntoLobby(LocalConnection);
     }
 
     private void OnClientConnectionState(ClientConnectionStateArgs obj)
@@ -100,18 +101,74 @@ public class SessionStateManager : NetworkBehaviour
     public override void OnStartServer()
     {
         base.OnStartServer();
-        LoadLobby();
+        if (IsServer)
+        {
+            // LoadLobby();
+        }
     }
 
-    private void LoadLobby()
+    [ServerRpc(RequireOwnership = false)]
+    private void LoadIntoLobby(NetworkConnection senderConnection)
     {
-        Debug.Log("Loading Lobby Scene...");
-        _sessionState = SessionState.Lobby;
+        Debug.Log($"Loading Lobby Scene for {senderConnection.ClientId}");
 
-        var lobbyScene = new SceneLookupData(_lobbyScene);
-        var sd = new SceneLoadData(lobbyScene);
-        sd.PreferredActiveScene = lobbyScene;
+        LoadConnectionIntoExistingScene(senderConnection, _lobbyScene);
+    }
 
-        SceneManager.LoadGlobalScenes(sd);
+    private void LoadConnectionIntoExistingScene(NetworkConnection connection, string sceneName,
+        NetworkObject[] toMove = null)
+    {
+        var sceneLookupData = new SceneLookupData(sceneName);
+        var sceneLoadData = new SceneLoadData(sceneLookupData);
+
+        sceneLoadData.PreferredActiveScene = sceneLookupData;
+
+        if (toMove != null)
+        {
+            sceneLoadData.MovedNetworkObjects = toMove;
+            foreach (NetworkObject obj in sceneLoadData.MovedNetworkObjects)
+            {
+                Debug.Log($"Moving {obj} into {sceneName}");
+            }
+        }
+
+
+        SceneManager.LoadConnectionScenes(connection, sceneLoadData);
+    }
+
+    private void UnloadConnectionFromScene(NetworkConnection connection, string sceneName, string activeScene)
+    {
+        var sceneLookupData = new SceneLookupData(sceneName);
+        var activeSceneLookupData = new SceneLookupData(activeScene);
+        var sceneLoadData = new SceneUnloadData(sceneLookupData);
+
+        sceneLoadData.PreferredActiveScene = activeSceneLookupData;
+
+        SceneManager.UnloadConnectionScenes(connection, sceneLoadData);
+    }
+
+    public void MoveConnection(NetworkConnection playerOwner, string targetScene)
+    {
+        MoveConnectionRPC(playerOwner, targetScene);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void MoveConnectionRPC(NetworkConnection playerOwner, string targetScene)
+    {
+        if (_removeQueue.ContainsKey(playerOwner))
+        {
+            Debug.Log($"{playerOwner.ClientId} is already in the process of moving");
+            return;
+        }
+
+        // find character nob
+        NetworkObject targetNob = SessionServiceFinder.PlayerCharacterService.GetCharacterNob(playerOwner);
+
+        Scene leavingScene = targetNob.gameObject.scene;
+
+        LoadConnectionIntoExistingScene(playerOwner, targetScene, new[] { targetNob });
+        UnloadConnectionFromScene(playerOwner, leavingScene.name, targetScene);
+
+        _removeQueue.Add(playerOwner, leavingScene);
     }
 }

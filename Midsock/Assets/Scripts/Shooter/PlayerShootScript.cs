@@ -9,6 +9,9 @@ public class PlayerShootScript : NetworkBehaviour
     [SerializeField]
     public float _cooldownTime;
 
+    [SerializeField]
+    private Transform camera;
+
     private float _nextFireTime;
 
     private void Update()
@@ -27,7 +30,7 @@ public class PlayerShootScript : NetworkBehaviour
         {
             _nextFireTime = Time.time + _cooldownTime;
             Debug.Log("Shoot Client Side");
-            ShootServerRpc(_damage, Camera.main.transform.position, Camera.main.transform.forward);
+            ShootServerRpc(_damage, camera.position, camera.forward);
         }
     }
 

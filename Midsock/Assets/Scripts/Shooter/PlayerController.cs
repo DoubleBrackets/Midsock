@@ -1,3 +1,4 @@
+using Cinemachine;
 using FishNet.Object;
 using UnityEngine;
 
@@ -24,10 +25,11 @@ public class PlayerController : NetworkBehaviour
     [SerializeField]
     private float _cameraYOffset = 0.4f;
 
+    [SerializeField]
+    private CinemachineVirtualCamera _playerCamera;
+
     private CharacterController _characterController;
     private Vector3 _moveDirection = Vector3.zero;
-
-    private Camera _playerCamera;
     private float _rotationX;
 
     private void Start()
@@ -93,14 +95,12 @@ public class PlayerController : NetworkBehaviour
         base.OnStartClient();
         if (IsOwner)
         {
-            _playerCamera = Camera.main;
-            _playerCamera.transform.position = new Vector3(transform.position.x, transform.position.y + _cameraYOffset,
-                transform.position.z);
-            _playerCamera.transform.SetParent(transform);
+            _playerCamera.Priority = 20;
             gameObject.name = "Player Character (Local)";
         }
         else
         {
+            _playerCamera.Priority = 0;
             gameObject.GetComponent<PlayerController>().enabled = false;
             gameObject.name = "Player Character (Remote)";
         }

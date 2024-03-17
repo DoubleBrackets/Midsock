@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e55e4f5d815d3654dab6ec518db047bf, type: 3}
+  m_Name: MovementConfig
+  m_EditorClassIdentifier: 
+  <MaxGroundSpeed>k__BackingField: 7
+  <GroundAcceleration>k__BackingField: 35
+  <GroundFriction>k__BackingField: 5
+  <MaxAirSpeed>k__BackingField: 7
+  <AirAcceleration>k__BackingField: 35
+  <AirFriction>k__BackingField: 35
+  <JumpVelocity>k__BackingField: 7
+  <DefaultGravity>k__BackingField: 20.08
+  <JumpGravity>k__BackingField: 10
+  <BunnyHopInterval>k__BackingField: 0.15
+  <CoyoteTime>k__BackingField: 0.1
+  <MaxStableGroundedAngle>k__BackingField: 45
+  <GroundedDistance>k__BackingField: 0.15
+  <GroundedLayerMask>k__BackingField:
+    serializedVersion: 2
+    m_Bits: 64
+  <SpherecastRadius>k__BackingField: 0.4
+  <SpherecastDistance>k__BackingField: 0.73
+  <SpherecastOffset>k__BackingField: 0

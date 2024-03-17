@@ -1,4 +1,3 @@
-using FishNet;
 using FishNet.Object;
 
 public class InSessionPlayerClient : NetworkBehaviour
@@ -21,13 +20,5 @@ public class InSessionPlayerClient : NetworkBehaviour
         {
             gameObject.name = "Player Client (Remote)";
         }
-
-        InstanceFinder.ClientManager.RegisterBroadcast<SessionStateManager.SpawnCharactersBroadcast>(
-            HandleCharacterSpawnedBroadcast);
-    }
-
-    private void HandleCharacterSpawnedBroadcast(SessionStateManager.SpawnCharactersBroadcast data)
-    {
-        // What.
     }
 }

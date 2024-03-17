@@ -1,5 +1,6 @@
 using System;
 using FishNet.Authenticating;
+using FishNet.Broadcast;
 using FishNet.Connection;
 using FishNet.Example.Authenticating;
 using FishNet.Managing;
@@ -9,6 +10,16 @@ using UnityEngine;
 public class VersionAuthenticator : HostAuthenticator
 {
     // Start is called before the first frame update
+
+    public struct VersionBroadcast : IBroadcast
+    {
+        public string Version;
+    }
+
+    public struct VersionResponseBroadcast : IBroadcast
+    {
+        public bool Passed;
+    }
 
     #region Public.
 
@@ -27,9 +38,9 @@ public class VersionAuthenticator : HostAuthenticator
         //Listen for connection state change as client.
         NetworkManager.ClientManager.OnClientConnectionState += ClientManager_OnClientConnectionState;
         //Listen for broadcast from client. Be sure to set requireAuthentication to false.
-        NetworkManager.ServerManager.RegisterBroadcast<PasswordBroadcast>(OnPasswordBroadcast, false);
+        NetworkManager.ServerManager.RegisterBroadcast<VersionBroadcast>(OnPasswordBroadcast, false);
         //Listen to response from server.
-        NetworkManager.ClientManager.RegisterBroadcast<ResponseBroadcast>(OnResponseBroadcast);
+        NetworkManager.ClientManager.RegisterBroadcast<VersionResponseBroadcast>(OnResponseBroadcast);
     }
 
     /// <summary>
@@ -53,9 +64,9 @@ public class VersionAuthenticator : HostAuthenticator
             return;
         }
 
-        var pb = new PasswordBroadcast
+        var pb = new VersionBroadcast
         {
-            Password = _version
+            Version = _version
         };
 
         NetworkManager.ClientManager.Broadcast(pb);
@@ -66,7 +77,7 @@ public class VersionAuthenticator : HostAuthenticator
     /// </summary>
     /// <param name="conn">Connection sending broadcast.</param>
     /// <param name="pb"></param>
-    private void OnPasswordBroadcast(NetworkConnection conn, PasswordBroadcast pb)
+    private void OnPasswordBroadcast(NetworkConnection conn, VersionBroadcast pb)
     {
         /* If client is already authenticated this could be an attack. Connections
          * are removed when a client disconnects so there is no reason they should
@@ -77,7 +88,7 @@ public class VersionAuthenticator : HostAuthenticator
             return;
         }
 
-        bool correctPassword = pb.Password == _version;
+        bool correctPassword = pb.Version == _version;
         SendAuthenticationResponse(conn, correctPassword);
         /* Invoke result. This is handled internally to complete the connection or kick client.
          * It's important to call this after sending the broadcast so that the broadcast
@@ -89,9 +100,9 @@ public class VersionAuthenticator : HostAuthenticator
     /// Received on client after server sends an authentication response.
     /// </summary>
     /// <param name="rb"></param>
-    private void OnResponseBroadcast(ResponseBroadcast rb)
+    private void OnResponseBroadcast(VersionResponseBroadcast rb)
     {
-        string result = rb.Passed ? "Authentication complete." : "Authenitcation failed.";
+        string result = rb.Passed ? "Authentication complete." : "Authentication failed.";
         if (!rb.Passed)
         {
             _connectionData.InvokeOnDisconnect(ConnectionDataSO.DisconnectReason.VersionCheckFailed);

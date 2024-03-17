@@ -15,6 +15,12 @@ EditorBuildSettings:
     path: Assets/Scenes/Session/SessionBaseScene.unity
     guid: b6a58db9df191a149adc7450917626d5
   - enabled: 1
-    path: Assets/Scenes/Session/LobbyScene.unity
+    path: Assets/Scenes/Session/PlaygroundScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/Scenes/Session/Test.unity
+    guid: 6c32797c2f44382438a73797a727d472
+  - enabled: 1
+    path: Assets/Scenes/Session/SubspaceScene.unity
+    guid: 661e080f60dbf6d43bf31eb3500152e2
   m_configObjects: {}
