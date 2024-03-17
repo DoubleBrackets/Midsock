@@ -520,7 +520,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e794901c3a82d24ea05769339bf833a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _componentIndexCache: 4
+  _componentIndexCache: 5
   _addedNetworkObject: {fileID: 2385966084816158117}
   _networkObjectCache: {fileID: 2385966084816158117}
   _playerNameText: {fileID: 3200084388525293854}
@@ -967,6 +967,7 @@ MonoBehaviour:
   - {fileID: 5548468658549331341}
   - {fileID: 8711050914175120638}
   - {fileID: -2015213642408062036}
+  - {fileID: 4104937095058417476}
   - {fileID: 8611233554971515340}
   <ParentNetworkObject>k__BackingField: {fileID: 0}
   <ChildNetworkObjects>k__BackingField: []
@@ -1063,7 +1064,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.6
+  m_Radius: 0.7
   m_Height: 2.1
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
@@ -1097,6 +1098,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 330872a5bbd5bca459fe9b727d44bcce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _componentIndexCache: 4
+  _addedNetworkObject: {fileID: 0}
+  _networkObjectCache: {fileID: 2385966084816158117}
   _characterController: {fileID: 5884867121818959981}
   _pushForce: 8
   _upwardForce: 3.5
