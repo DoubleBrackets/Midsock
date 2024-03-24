@@ -1,4 +1,4 @@
-name: Unity-Builder
+name: Unity-Windows-Builder
 run-name: ${{ github.actor }} is building ${{ github.ref_name }}
 
 env:
