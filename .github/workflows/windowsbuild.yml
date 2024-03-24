@@ -1,0 +1,83 @@
+name: Unity-Builder
+run-name: ${{ github.actor }} is building ${{ github.ref_name }}
+
+env:
+  PROJ_DIR: Midsock
+  PROJ_NAME: midsock
+  BUILD_NAME_PREFIX: Build
+  BUILD_DIR: build
+  BUTLER_LINK: https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
+  ITCH_GAME_NAME: doublebrackets/midsock
+
+on: 
+  push:
+    branches: 
+      - main
+    # paths:
+    #   # Only build when these are changed by the push
+    #   - ‘${{env.PROJ_DIR}}/Assets/**’
+    #   - ‘${{env.PROJ_DIR}}/Packages/**’
+    #   - ‘${{env.PROJ_DIR}}/ProjectSettings/**
+  workflow_dispatch:
+      
+jobs:
+  BuildForWebGL:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        targetPlatform:
+          - StandaloneWindows64
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Library Cache
+        uses: actions/cache@v3
+        with:
+          path: ${{env.PROJ_DIR}}/Library
+          key: Library-${{ env.PROJ_NAME }}-${{ matrix.targetPlatform }}-${{ hashFiles('${{env.PROJ_DIR}}/Assets/**', '${{env.PROJ_DIR}}/Packages/**', '${{env.PROJ_DIR}}/ProjectSettings/**') }}
+          restore-keys: |
+            Library-${{ env.PROJ_NAME }}-${{ matrix.targetPlatform }}-
+            Library-${{ env.PROJ_NAME }}-
+        
+      - name: Build Unity Project
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          targetPlatform: ${{ matrix.targetPlatform }}
+          unityVersion: auto
+          projectPath: ${{env.PROJ_DIR}}
+          buildsPath: ${{env.BUILD_PATH}}
+          
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{env.BUILD_NAME_PREFIX}}-${{ matrix.targetPlatform }}
+          path: ${{env.BUILD_DIR}}/${{ matrix.targetPlatform }}
+
+      # Zip before uploading to itch isn't required, but lower upload size
+      - name: Zip Build
+        uses: montudor/action-zip@v1
+        with:
+          args: zip -qq -r ${{env.BUILD_DIR}}/${{env.BUILD_NAME_PREFIX}}-${{ matrix.targetPlatform }}.zip ${{env.BUILD_DIR}}/${{ matrix.targetPlatform }}
+          
+      - name: Download Butler
+        run: |
+          curl -L -o butler.zip ${{env.BUTLER_LINK}}
+          unzip butler.zip
+          chmod +x butler
+          ./butler -V
+          tree -L 4
+
+      - name: Push Build to Butler
+        run: |
+          ./butler push ${{env.BUILD_DIR}}/${{env.BUILD_NAME_PREFIX}}-${{ matrix.targetPlatform }}.zip ${{env.ITCH_GAME_NAME}}:${{ matrix.targetPlatform }}
+        env:
+          BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
+    
+    
