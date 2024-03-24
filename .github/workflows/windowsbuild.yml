@@ -6,7 +6,7 @@ env:
   PROJ_NAME: midsock
   BUILD_NAME_PREFIX: Build
   BUILD_DIR: build
-  BUTLER_LINK: https://broth.itch.ovh/butler/windows-amd64/LATEST/archive/default
+  BUTLER_LINK: https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
   ITCH_GAME_NAME: doublebrackets/midsock
 
 on: 
@@ -22,7 +22,7 @@ on:
       
 jobs:
   BuildForWebGL:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         targetPlatform:
